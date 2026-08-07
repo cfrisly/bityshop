@@ -8,6 +8,8 @@ Route::get('/', 'ProductController@index');
 
 Auth::routes();
 
+Route::get('/search', 'ProductController@search')->name('product.search');
+
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::group(['prefix' => 'shop', 'as' => 'product.'], function() {

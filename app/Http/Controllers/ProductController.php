@@ -6,6 +6,7 @@ use App\Http\Requests\ProductIndexRequest;
 use Vanilo\Category\Contracts\Taxon;
 use Vanilo\Category\Models\TaxonomyProxy;
 use Vanilo\Foundation\Search\ProductSearch;
+use Vanilo\Product\Models\Product;
 use Vanilo\Properties\Models\PropertyProxy;
 
 class ProductController extends Controller
@@ -48,6 +49,24 @@ class ProductController extends Controller
         return view('product.show', [
             'product' => $product,
             'productType' => shorten($product::class),
+        ]);
+    }
+
+    public function search(ProductIndexRequest $request){
+        $q = $request->q;
+
+        $taxonomies = TaxonomyProxy::get();
+        $properties = PropertyProxy::get();
+
+        $products = $this->productFinder
+            ->nameContains($q)
+            ->getResults();
+        return view('product.index', [
+            'products' => $products,
+            'taxonomies' => $taxonomies,
+            'taxon' => null,
+            'properties' => $properties,
+            'filters' => []
         ]);
     }
 }

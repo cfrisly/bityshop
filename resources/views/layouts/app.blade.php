@@ -84,6 +84,22 @@
                     </ul>
                 </div>
             </div>
+            <form action="{{ route('product.search') }}" method="GET" class="navbar-form navbar-left">
+                <div class="input-group">
+                    <input 
+                        type="text"
+                        name="q"
+                        class="form-control"
+                        placeholder="Buscar productos..."
+                        value="{{ request('q')}}">
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                            Buscar
+                        </button>
+                    </span>
+                </div>
+            </form>
         </nav>
 
         <main class="py-4">
