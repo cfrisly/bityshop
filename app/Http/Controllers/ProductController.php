@@ -60,45 +60,60 @@ class ProductController extends Controller
         $properties = PropertyProxy::get();
 
         //Busca por nombre del producto
-        $productsByName = $this->productFinder
+        $productsByName = (new ProductSearch())
             ->nameContains($q)
             ->getResults();
 
-        //Busca si existe una categorias y subcategorias
+        // Buscar Taxons
         $taxons = TaxonProxy::query()
-            ->where('name', 'LIKE', "%{$q}%")
+            ->where('name', 'LIKE', "%$q%")
             ->get();
 
-        //Obtiene todos los Taxon Hijos
-        $allTaxons = collect();
-        foreach ($taxons as $taxon){
+        //Busca Taxonomy
+        $taxonomies = TaxonomyProxy::query()
+            ->where('name', 'LIKE', "%$q%")
+            ->get();
 
-            //Agregar Categoria encontrada
-            $allTaxons->push($taxon);
 
-            //Agregar todos sus hijos
-            $this->addChildTaxons($taxon, $allTaxons);
+        //Reune todos los taxons que se debe buscar
+        $taxonsToSearch = collect();
+        
+        //Taxons encontrados directamente
+        foreach ($taxons as $taxon) {
+            $taxonsToSearch->push($taxon);
         }
 
-        //Busca productos de las categorias
-        $productsByCategory = collect();
+        // Taxons pertenecientes a las taxonomies encontrados
+        foreach ($taxonomies as $taxonomy) {
+            $taxonomyTaxon = TaxonProxy::query()
+                ->where('taxonomy_id', $taxonomy->id)
+                ->get();
 
-        foreach ($taxons as $taxon) {
-
-            $categoryProducts = (new ProductSearch())
-                ->withinTaxon($taxon)
-                ->getResults();
-
-            $productsByCategory = $productsByCategory->merge(
-                $categoryProducts
+            $taxonsToSearch = $taxonsToSearch->merge(
+                $taxonomyTaxon
             );
         }
 
+        //Buscar productos por categoria
+        $productsByCategory = collect();
+
+        if ($taxonsToSearch->isNotEmpty()) {
+            $productsByCategory = (new ProductSearch())
+                ->withinTaxons(
+                    $taxonsToSearch
+                        ->unique('id')
+                        ->values()
+                        ->all()
+                )
+                ->getResults();
+        }
+        
         //Unir los resultados 
         $products = $productsByName
             ->merge($productsByCategory)
             ->unique(function ($product) {
-                return $product::class . '-' . $product->id;
+                //return $product::class . '-' . $product->id;
+                return get_class($product) . '-' . $product->id;
             })
             ->values();
 
@@ -110,12 +125,5 @@ class ProductController extends Controller
             'properties' => $properties,
             'filters' => []
         ]);
-    }
-
-    private function addChildTaxons($taxon, &$collection){
-        foreach($taxon->children as $child) {
-            $collection->push($child);
-            $this->addChildTaxons($child, $collection);
-        }
     }
 }
