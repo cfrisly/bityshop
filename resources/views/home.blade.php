@@ -11,6 +11,9 @@
                            {{ Auth::user()->name }}
                        </div>
                    </div>-->
+                   <div class="customer-icon">
+                        👤
+                   </div>
                    <h5>Bienvenido {{ Auth::user()->name }}</h5>
                    <hr>
                    <ul class="list-group list-group-flush">
