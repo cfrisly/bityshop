@@ -26,8 +26,9 @@ class HomeController extends Controller
         $user = Auth::user();
 
         $orders = $user->orders()
+            //->with('items.products')
             ->latest()
-            ->toke(5)
+            ->take(5)
             ->get();
         
         return view('home', [

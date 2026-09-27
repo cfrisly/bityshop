@@ -55,6 +55,9 @@ class CheckoutController extends Controller
 
         /** @var Order $order */
         $order = $orderFactory->createFromCheckout($this->checkout);
+        if (auth()->check()){
+            $order->user_id = auth()->id();
+        }
         $order->notes = $request->get('notes');
         $order->save();
         $this->cart->destroy();
