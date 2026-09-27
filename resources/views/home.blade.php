@@ -97,11 +97,6 @@
                             </div>
 
                             <div class="card-body">
-                                @if ($orders->isEmpty())
-                                    <div class="alert alert-info">
-                                        Aun no tienes pedidos realizados.
-                                    </div>
-                                @else
                                 
                                 @foreach ($order->items as $item)
                                     <div class="row align-items-center mb-3">
