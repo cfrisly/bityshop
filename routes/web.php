@@ -3,10 +3,16 @@
 Route::get('/', function () {
    return view('welcome');
 });*/
+use App\Http\Controllers\OrderController;
 
 Route::get('/', 'ProductController@index');
 
 Auth::routes();
+
+Route::post('/orders/{id}/cancel', [
+   OrderController::class,
+   'cancel'
+])->name('orders.cancel');
 
 Route::get('/search', 'ProductController@search')->name('product.search');
 

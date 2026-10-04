@@ -9,6 +9,12 @@ return [
             ]
         ],
         Vanilo\Foundation\Providers\ModuleServiceProvider::class => [
+            'currency' => [
+            'code' => 'GTQ',
+            'sign' => 'Q',
+            'format' => '%2$s %1$.2f',
+            ],
+            
             'image' => [
                 'taxon' => [
                     'variants' => [

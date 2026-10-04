@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Vanilo\Order\Models\OrderProxy;
+use Vanilo\Order\Models\OrderStatus;
 
 class OrderController extends Controller
 {
@@ -11,19 +12,19 @@ class OrderController extends Controller
         $order = OrderProxy::findOrFail($id);
 
         //Verificar que el pedido pertenece al usuario autenticado
-        if($order->user_id !== auth()->id()) {
+        if($order->user_id != auth()->id()) {
             abort(403, 'No tienes permiso para cancelar este pedido');
         }
 
         //Solo puede cancelar pedidos pendites
-        if($order->status !== 'pending') {
+        if($order->status->value() != 'pending') {
             return redirect()
                 ->route('home')
                 ->with('error', 'Este pedido ya no puede ser cancelado');
         }
 
         //Cancelar pedido
-        $order->status = 'cancelled';
+        $order->status = OrderStatus::create('cancelled');
         $order->save();
 
         return redirect()

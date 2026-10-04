@@ -62,44 +62,53 @@
                         <div class="card mb-4">
                             <div class="card-header">
                                 <div class="d-flex justify-content-between align-items-center">
+                                    {{-- Informacion del pedido --}}
                                     <div>
                                         <strong>Orden #{{ $order->number }}</strong>
+
                                         <br>
+
                                         <small class="text-muted">
                                             Fecha:
                                             {{ \Carbon\Carbon::parse($order->ordered_at)->format('d/m/Y H:i') }}
                                         </small>
                                     </div>
 
-                                    <span class="badge bg-secondary">
-                                        {{ ucfirst($order->status) }}
-                                    </span>
+                                    {{--Estado y boton--}}
+                                    <div class="d-flex align-items-center gap-2">
 
-                                    @if ($order->status === 'pending')
-                                        <form 
-                                        action="{{ route('orders.cancel', $order->id) }}"
-                                        method="POST"
-                                        style="display: inline;"
-                                        onsubmit="return confirm('Seguro que deseas cancelar este pedido?');"
-                                        >
-                                            @csrf
+                                        <span class="badge bg-secondary">
+                                            {{ ucfirst($order->status) }}
+                                        </span>
 
-                                            <button
-                                                type="submit"
-                                                class="btn btn-sm btn-danger ms-2"
+                                        @if (strtolower($order->status) == 'pending')
+
+                                            <form 
+                                            action="{{ route('orders.cancel', $order->id) }}"
+                                            method="POST"
+                                            style="display: inline;"
+                                            onsubmit="return confirm('Seguro que deseas cancelar este pedido?');"
                                             >
-                                                Cancelar pedido
-                                            </button>
-                                        </form>
-                                    @endif
+                                                @csrf
 
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-sm btn-danger"
+                                                >
+                                                    Cancelar pedido
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 
+                            {{-- Productos del pedido --}}
                             <div class="card-body">
                                 
                                 @foreach ($order->items as $item)
                                     <div class="row align-items-center mb-3">
+
                                         {{-- Imagen del producto --}}
                                         <div class="col-md-2">
                                             <div class="border rounded p-2 text-center">
