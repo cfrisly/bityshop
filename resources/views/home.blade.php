@@ -65,7 +65,6 @@
                                     {{-- Informacion del pedido --}}
                                     <div>
                                         <strong>Orden #{{ $order->number }}</strong>
-
                                         <br>
 
                                         <small class="text-muted">
@@ -132,6 +131,7 @@
                                             </h6>
                                             <small class="text-muted">
                                                 Producto ID: {{ $item->product_id }}
+                                                Codigo: {{ $item->product->sku ?? 'Sin codigo' }}
                                             </small>
                                             <br>
                                             <small>
@@ -142,7 +142,7 @@
                                         {{-- Precio --}}
                                         <div class="col-md-4 text-end">
                                             <strong>
-                                                {{ number_format($item->price, 2) }}
+                                                {{ format_price($item->price) }}
                                             </strong>
                                         </div>
                                     </div>
