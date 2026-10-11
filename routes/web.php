@@ -17,6 +17,7 @@ Route::post('/orders/{id}/cancel', [
 Route::get('/search', 'ProductController@search')->name('product.search');
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::put('/perfil', 'HomeController@updateProfile')->name('profile.update');
 
 Route::group(['prefix' => 'shop', 'as' => 'product.'], function() {
    Route::get('index', 'ProductController@index')->name('index');
