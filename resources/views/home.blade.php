@@ -113,6 +113,19 @@
                     $user = Auth::user();
                     // Si hubo error al guardar, se queda en modo edicion
                     $editing = request('edit') || $errors->any();
+
+                    //Valores actuales: del cliente, si no hay cliente, se toman del usuario
+                    $parts = preg_split('/\s+/', trim($user->name), 2);
+                    $firstname = $customer->firstname ?? $parts[0];
+                    $lastname = $customer->lastname ?? ($parts[1] ?? '');
+                    $phone = $customer->phone ?? '';
+                    $companyName = $customer->company_name ?? '';
+                    $taxNr = $customer->tax_nr ?? '';
+                    $type = $customer ? (string) $customer->type->value() : 'individual';
+                    $typeLabels = ['individual' => 'Persona individual', 'organization' => 'Empresa'];
+                    $fmt = function ($date, $format = 'd/m/Y') {
+                        return $date ? \Carbon\Carbon::parse($date)->format($format) : '-';
+                    }
                 @endphp
 
                 <div class="card">
@@ -120,12 +133,13 @@
                     <div class="card-header d-flex justify-content-between align-item-center">
                         <h5 class="mb-0">Mi Perfil</h5>
 
-                        @unless($editing)
+                        @if (! $editing)
                             <a href="{{ route('home', ['section' => 'profile', 'edit' => 1]) }}"
                                 class="btn btn-sm btn-outline-danger">
                                 ✎ Editar
                             </a>
-                        @endunless
+                        @endif
+
                     </div>
 
                     <div class="card-body">
@@ -144,6 +158,13 @@
                             </div>
                         @endif
 
+                        @if (! $customer && ! $editing)
+                            <div class="alert alert-warning">
+                                Tu perfil aún no tiene datos de cliente completos.
+                                <a href="{{ route('home', ['section' => 'profile', 'edit' => 1]) }}">Complétalos aquí</a>.
+                            </div>
+                        @endif
+
                         @if ($editing)
                             {{--Modo_edicion--}}
                             <form method="post" action="{{ route('profile.update') }}">
@@ -153,9 +174,17 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="name" class="fw-bold">Nombre</label>
-                                        <input type="text" id="name" name="name"
+                                        <input type="text" id="name" name="firstname"
                                             class="form-control @error('name') is-invalid @enderror"
-                                            value="{{ old('name', $user->name) }}" required
+                                            value="{{ old('firstname', $firstname) }}" required
+                                        >
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="name" class="fw-bold">Apellido</label>
+                                        <input type="text" id="name" name="lastname"
+                                            class="form-control @error('lastname') is-invalid @enderror"
+                                            value="{{ old('lastname', $lastname) }}" required
                                         >
                                     </div>
 
@@ -165,6 +194,38 @@
                                             class="form-control @error('email') is-invalid @enderror"
                                             value="{{ old('email', $user->email) }}" required>
                                     </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="phone" class="fw-bold">Teléfono</label>
+                                        <input type="text" id="phone" name="phone" class="form-control"
+                                            value="{{ old('phone', $phone) }}">
+                                    </div>
+
+                                    <div class="col-md-4 md-3">
+                                        <label for="type" class="fw-bold">Tipo de cliente</label>
+                                        @php $selectdType = old('type', $type); @endphp
+                                        <select name="type" id="type" class="form-select form-control">
+                                            @foreach ($typeLabels as $value => $label)
+                                                <option value="{{ $value }}" {{ old('type', $type) == $value ? 'selected' : '' }}>
+                                                    {{ $label }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-4 mb-3">
+                                        <label for="company_name" class="fw-bold">Empresa</label>
+                                        <input type="text" id="company_name" name="company_name" class="form-control"
+                                            placeholder="Solo si eres empresa"
+                                            value="{{ old('company_name', $companyName) }}">
+                                    </div>
+
+                                    <div class="col-md-4 mb-3">
+                                        <label for="tax_nr" class="fw-bold">NIT</label>
+                                        <input type="text" id="tax_nr" name="tax_nr" class="form-control"
+                                            value="{{ old('tax_nr', $taxNr) }}">
+                                    </div>
+
                                 </div>
 
                                 <div class="d-flex justify-content-end gap-2">
@@ -182,7 +243,12 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="fw-bold">Nombre</label>
-                                    <div class="form-control bg-light">{{ $user->name }}</div>
+                                    <div class="form-control bg-light">{{ $firstname ?: '-' }}</div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="fw-bold">Apellido</label>
+                                    <div class="form-control bg-light">{{ $lastname ?: '-' }}</div>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
@@ -194,15 +260,42 @@
                                     <label class="fw-bold">Usuario</label>
                                     <div class="form-control bg-light">{{ $user->email }}</div>
                                 </div>
-                            </div>
 
-                            <div class="row">
-                                <div class="col-md6 mb-3">
-                                    <label class="fw-bold">Cliente desde</label>
-                                    <div class="form-control bg-light">
-                                        {{ $user->created_at?->format('d/m/Y') }}
-                                    </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="fw-bold">Teléfono</label>
+                                    <div class="form-control bg-light">{{ $phone ?: '-' }}</div>
                                 </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label class="fw-bold">Tipo de cliente</label>
+                                    <div class="form-control bg-light">{{ $typeLabels[$type] ?? $type }}</div>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label class="fw-bold">Empresa</label>
+                                    <div class="form-control bg-light">{{ $companyName ?: '—' }}</div>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label class="fw-bold">NIT</label>
+                                    <div class="form-control bg-light">{{ $taxNr ?: '—' }}</div>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label class="fw-bold">Número de cliente</label>
+                                    <div class="form-control bg-light">{{ $customer->customer_number ?? '—' }}</div>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label class="fw-bold">Cliente desde</label>
+                                    <div class="form-control bg-light">{{ $fmt($user->created_at) }}</div>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label class="fw-bold">Última compra</label>
+                                    <div class="form-control bg-light">{{ $fmt($customer->last_purchase_at ?? null) }}</div>
+                                </div>
+
                             </div>
 
                         @endif
