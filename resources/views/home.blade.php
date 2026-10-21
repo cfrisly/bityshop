@@ -226,6 +226,50 @@
                                             value="{{ old('tax_nr', $taxNr) }}">
                                     </div>
 
+                                    <hr>
+
+                                    <h6 class="text-muted mb-3">Direccion</h6>
+                                    <div class="row">
+                                        <div class="col-md-8 mb-3">
+                                            <label for="address" class="fw-bold">Direccion</label>
+                                            <input type="text" id="address" name="address" class="form-control"
+                                                placeholder="Calle, avenida, numero de casa"
+                                                value="{{ old('address', $address->address ?? '') }}">
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <label for="address2" class="fw-bold">Zona / Referencia</label>
+                                            <input type="text" id="address2" name="address2" class="form-control"
+                                                value="{{ old('address2', $address->address2 ?? '') }}">
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <label for="city" class="fw-bold">Ciudad / Municipio</label>
+                                            <input type="text" id="city" name="city" class="form-control"
+                                                value="{{ old('city', $address->city ?? '') }}">
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <label for="postalcode" class="fw-bold">Código postal</label>
+                                            <input type="text" id="postalcode" name="postalcode" class="form-control"
+                                                value="{{ old('postalcode', $address->postalcode ?? '') }}">
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <label for="country_id" class="fw-bold">País</label>
+                                            <select id="country_id" name="country_id" class="form-select form-control">
+                                                <option value="">Selecciona un país</option>
+                                                @foreach ($countries as $country)
+                                                    <option value="{{ $country->id }}"
+                                                        {{ old('country_id', $address->country_id ?? 'GT') == $country->id ? 'selected' : '' }}>
+                                                        {{ $country->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                    </div>
+
                                 </div>
 
                                 <div class="d-flex justify-content-end gap-2">
@@ -297,6 +341,42 @@
                                 </div>
 
                             </div>
+
+                            <hr>
+                            <h6 class="text-muted mb-3">Direccion</h6>
+                            @if($address)
+                                <div class="row">
+                                    <div class="col-md-8 mb-3">
+                                        <label class="fw-bold">Dirección</label>
+                                        <div class="form-control bg-light">{{ $address->address }}</div>
+                                    </div>
+
+                                    <div class="col-md-4 mb-3">
+                                        <label class="fw-bold">Zona / Referencia</label>
+                                        <div class="form-control bg-light">{{ $address->address2 ?: '—' }}</div>
+                                    </div>
+
+                                    <div class="col-md-4 mb-3">
+                                        <label class="fw-bold">Ciudad / Municipio</label>
+                                        <div class="form-control bg-light">{{ $address->city ?: '—' }}</div>
+                                    </div>
+
+                                    <div class="col-md-4 mb-3">
+                                        <label class="fw-bold">Código postal</label>
+                                        <div class="form-control bg-light">{{ $address->postalcode ?: '—' }}</div>
+                                    </div>
+
+                                    <div class="col-md-4 mb-3">
+                                        <label class="fw-bold">País</label>
+                                        <div class="form-control bg-light">{{ optional($address->country)->name ?? $address->country_id }}</div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="alert alert-light border">
+                                    Aún no tienes una dirección registrada.
+                                    <a href="{{ route('home', ['section' => 'profile', 'edit' => 1]) }}">Agrégala aquí</a>.
+                                </div>
+                            @endif
 
                         @endif
 
@@ -499,23 +579,142 @@
             {{-- ========================================= --}}
             {{-- DIRECCIONES --}}
             {{-- ========================================= --}}
+
             @elseif ($section == 'addresses')
 
-                <div class="card">
+            @php
+                $editingId = request('edit_address');
+                $showNew   = request('new') || ($errors->any() && ! $editingId);
+                $typeNames = ['shipping' => 'Envío', 'billing' => 'Facturación'];
+            @endphp
 
-                    <div class="card-header">
-                        <h5>Direcciones guardadas</h5>
-                    </div>
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Direcciones guardadas</h5>
 
-                    <div class="card-body">
+                    @if (! $showNew && ! $editingId)
+                        <a href="{{ route('home', ['section' => 'addresses', 'new' => 1]) }}"
+                        class="btn btn-sm btn-outline-danger">
+                            + Agregar dirección
+                        </a>
+                    @endif
+                </div>
 
-                        <div class="alert alert-info">
-                            Aquí aparecerán tus direcciones guardadas.
+                <div class="card-body">
+
+                    @if (session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
+                    @endif
 
-                    </div>
+                    {{-- Formulario para agregar --}}
+                    @if ($showNew)
+                        @include('partials.address-form', [
+                            'action'    => route('addresses.store'),
+                            'method'    => 'POST',
+                            'addr'      => null,
+                            'isDefault' => false,
+                        ])
+                    @endif
+
+                    {{-- Lista de direcciones --}}
+                    @forelse ($addresses as $addr)
+
+                        @php
+                            $addrType  = $addr->type->value();
+                            $defaultId = $addrType === 'shipping'
+                                ? $customer->default_shipping_address_id
+                                : $customer->default_billing_address_id;
+                            $isDefault = $defaultId == $addr->id;
+                        @endphp
+
+                        @if ($editingId == $addr->id)
+
+                            @include('partials.address-form', [
+                                'action'    => route('addresses.update', $addr->id),
+                                'method'    => 'PUT',
+                                'addr'      => $addr,
+                                'isDefault' => $isDefault,
+                            ])
+
+                        @else
+
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex justify-content-between align-items-start">
+
+                                    <div>
+                                        <div class="mb-1">
+                                            <span class="badge bg-secondary">{{ $typeNames[$addrType] ?? $addrType }}</span>
+                                            @if ($isDefault)
+                                                <span class="badge bg-success">Predeterminada</span>
+                                            @endif
+                                        </div>
+
+                                        <strong>{{ $addr->name }}</strong><br>
+                                        {{ $addr->address }}{{ $addr->address2 ? ', ' . $addr->address2 : '' }}<br>
+                                        {{ $addr->city }}{{ $addr->postalcode ? ', ' . $addr->postalcode : '' }},
+                                        {{ optional($addr->country)->name ?? $addr->country_id }}<br>
+
+                                        @if ($addr->phone)
+                                            <small class="text-muted">Tel: {{ $addr->phone }}</small><br>
+                                        @endif
+                                        @if ($addr->tax_nr)
+                                            <small class="text-muted">NIT: {{ $addr->tax_nr }}</small>
+                                        @endif
+                                    </div>
+
+                                    <div class="d-flex flex-column gap-2 align-items-end">
+                                        <a href="{{ route('home', ['section' => 'addresses', 'edit_address' => $addr->id]) }}"
+                                        class="btn btn-sm btn-outline-secondary">
+                                            ✎ Editar
+                                        </a>
+
+                                        @if (! $isDefault)
+                                            <form action="{{ route('addresses.default', $addr->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-outline-success">
+                                                    Usar como predeterminada
+                                                </button>
+                                            </form>
+                                        @endif
+
+                                        <form action="{{ route('addresses.destroy', $addr->id) }}" method="POST"
+                                            onsubmit="return confirm('¿Seguro que deseas eliminar esta dirección?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        @endif
+
+                    @empty
+
+                        @if (! $showNew)
+                            <div class="alert alert-info">
+                                Aún no tienes direcciones guardadas.
+                                <a href="{{ route('home', ['section' => 'addresses', 'new' => 1]) }}">Agrega la primera</a>.
+                            </div>
+                        @endif
+
+                    @endforelse
 
                 </div>
+            </div>
 
 
             {{-- ========================================= --}}

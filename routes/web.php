@@ -9,6 +9,11 @@ Route::get('/', 'ProductController@index');
 
 Auth::routes();
 
+Route::post('/direcciones', 'AddressController@store')->name('addresses.store');
+Route::put('/direcciones/{id}', 'AddressController@update')->name('addresses.update');
+Route::delete('/direcciones/{id}', 'AddressController@destroy')->name('addresses.destroy');
+Route::post('/direcciones/{id}/predeterminada', 'AddressController@makeDefault')->name('addresses.default');
+
 Route::post('/orders/{id}/cancel', [
    OrderController::class,
    'cancel'
