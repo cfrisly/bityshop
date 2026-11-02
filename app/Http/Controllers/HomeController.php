@@ -52,6 +52,7 @@ class HomeController extends Controller
             'address' => $address,
             'addresses' => $customer ? $customer->addresses()->latest()->get() : collect(),
             'countries' => CountryProxy::orderBy('name')->get(),
+            'favorites' => $user->favoriteProducts()->orderBy('favorites.created_at', 'desc')->get(),
         ]);
     }
 

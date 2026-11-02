@@ -562,15 +562,17 @@
                 <div class="card">
 
                     <div class="card-header">
-                        <h5>Mis Favoritos</h5>
+                        <h5 class="mb-0">Mis Favoritos</h5>
                     </div>
 
                     <div class="card-body">
-
-                        <div class="alert alert-info">
-                            Aún no tienes productos favoritos.
-                        </div>
-
+                        @if($favorites->isEmpty())
+                            <div class="alert alert-info">
+                                Aún no tienes productos favoritos.
+                            </div>
+                        @else
+                            @include('product._grid', ['products' => $favorites, 'removeOnUnfavorite' => true])
+                        @endif
                     </div>
 
                 </div>

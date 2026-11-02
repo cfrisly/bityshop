@@ -66,15 +66,8 @@
                     <div class="card-header">{{ $taxon ?  'Products in ' . $taxon->name : 'All Products' }}</div>
 
                     <div class="card-body">
-                        <div class="row">
-
-                            @foreach($products as $product)
-                                <div class="col-12 col-sm-6 col-md-4 mb-4">
-                                    @include('product.index._product')
-                                </div>
-                            @endforeach
-
-                        </div>
+                        @include('product._grid', ['products' => $products])
+                        
                     </div>
                 </div>
                 @endif
