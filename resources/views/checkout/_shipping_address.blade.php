@@ -1,5 +1,5 @@
 <div id="shipping-address" x-show="!shipToBillingAddress">
-    <h3>Shipping Address</h3>
+    <h3>{{ __('Shipping Address') }}</h3>
     <hr>
 
     <div class="mb-3 row">

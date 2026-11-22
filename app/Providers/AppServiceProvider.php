@@ -59,6 +59,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        // El idioma se aplica antes de que arranquen AppShell y Vanilo, porque arman
+        // el menú del admin y otras etiquetas al iniciar (ver también EstablecerIdioma)
+        $this->app->booting(function () {
+            $idioma = \App\Support\Ajustes::idiomaGuardado();
+            $this->app->setLocale($idioma);
+            \Illuminate\Support\Carbon::setLocale($idioma);
+        });
     }
 }

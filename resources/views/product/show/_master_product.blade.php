@@ -17,7 +17,7 @@
 
     <div class="col-md-6">
         <div>
-            <h4>Variants</h4>
+            <h4>{{ __('Variants') }}</h4>
             <div>
             @foreach($product->variants as $variant)
                 <button class="btn" :class="selectedId === {{$variant->id}} ? 'btn-primary' : 'btn-outline-dark'"
@@ -29,7 +29,7 @@
                 {{ csrf_field() }}
 
                 <span class="mr-2 font-weight-bold text-primary btn-lg" x-text="selectedVariant.priceFmt">{{ format_price($product->price) }}</span>
-                <button type="submit" class="btn btn-success btn-lg" :disabled="null === selectedId">Add to cart</button>
+                <button type="submit" class="btn btn-success btn-lg" :disabled="null === selectedId">{{ __('Add to cart') }}</button>
             </form>
 
             <hr>

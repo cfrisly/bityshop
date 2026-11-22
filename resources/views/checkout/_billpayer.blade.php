@@ -1,4 +1,4 @@
-<h3>Bill To</h3>
+<h3>{{ __('Bill To') }}</h3>
 <hr>
 
 <div class="row">
@@ -7,7 +7,7 @@
         <div class="mb-3">
             {{ Form::text('billpayer[email]', Auth::user() ? Auth::user()->email : null, [
                     'class' => 'form-control' . ($errors->has('billpayer.email') ? ' is-invalid' : ''),
-                    'placeholder' => 'E-mail'
+                    'placeholder' => __('E-mail')
                 ])
             }}
 
@@ -21,7 +21,7 @@
         <div class="mb-3">
             {{ Form::text('billpayer[phone]', null, [
                     'class' => 'form-control' . ($errors->has('billpayer.phone') ? ' is-invalid' : ''),
-                    'placeholder' => 'Telefon'
+                    'placeholder' => __('Phone')
                 ])
             }}
 

@@ -78,7 +78,8 @@ return [
     |
     */
 
-    'locale' => 'en',
+    // Idioma por defecto. Se cambia en Admin → Configuración → Tienda → Idioma
+    'locale' => 'es',
 
     /*
     |--------------------------------------------------------------------------

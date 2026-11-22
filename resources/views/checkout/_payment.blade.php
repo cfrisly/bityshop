@@ -1,5 +1,5 @@
 <div id="payment" class="mb-4">
-    <h3>Payment Method</h3>
+    <h3>{{ __('Payment Method') }}</h3>
     <hr>
 
     <div class="mb-3 row">

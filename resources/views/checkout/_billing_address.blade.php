@@ -1,4 +1,4 @@
-<h3>Billing Address</h3>
+<h3>{{ __('Billing Address') }}</h3>
 <hr>
 
 <div class="mb-3 row">

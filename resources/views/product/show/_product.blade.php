@@ -21,7 +21,7 @@
             {{ csrf_field() }}
 
             <span class="mr-2 font-weight-bold text-primary btn-lg">{{ format_price($product->price) }}</span>
-            <button type="submit" class="btn btn-success btn-lg" @if(!$product->price) disabled @endif>Add to cart</button>
+            <button type="submit" class="btn btn-success btn-lg" @if(!$product->price) disabled @endif>{{ __('Add to cart') }}</button>
         </form>
 
         @unless(empty($product->propertyValues))
