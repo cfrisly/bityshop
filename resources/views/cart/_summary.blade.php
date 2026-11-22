@@ -14,6 +14,12 @@
         <td>-{{ format_price(abs($sumDescuento)) }}</td>
     </tr>
     @endif
+    @if(\App\Support\Carrito::regalo())
+    <tr>
+        <th class="pl-0">Empaque regalo:</th>
+        <td>{{ \App\Support\Carrito::costoRegalo() > 0 ? format_price(\App\Support\Carrito::costoRegalo()) : 'Gratis' }}</td>
+    </tr>
+    @endif
     @if(isset($shippingOptions) && $shippingOptions->isNotEmpty())
     <tr>
         <th class="pl-0">Envío:</th>

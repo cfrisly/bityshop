@@ -225,6 +225,16 @@
                     @endif
                 </details>
 
+                @if($giftCost !== null)
+                    <form action="{{ route('cart.gift') }}" method="POST" class="ct-coupon d-flex align-items-center gap-2" style="padding: 10px 14px;">
+                        @csrf
+                        <input type="hidden" name="regalo" value="0">
+                        <input type="checkbox" class="form-check-input m-0" id="ct-regalo" name="regalo" value="1" @checked($gift) onchange="this.form.submit()">
+                        <label for="ct-regalo" class="flex-grow-1 m-0" style="cursor:pointer; font-weight:600;">Agregar empaque para regalo</label>
+                        <span class="text-muted small">@if($giftCost > 0) <x-precio :valor="$giftCost"/> @else gratis @endif</span>
+                    </form>
+                @endif
+
                 <div class="ct-row"><span>Subtotal productos</span><x-precio :valor="$subtotal"/></div>
                 @if($discount < 0)
                     <div class="ct-row text-success">
@@ -251,13 +261,16 @@
                         <span>sin descuento aún</span>
                     </div>
                 @endif
+                @if($gift)
+                    <div class="ct-row"><span>Empaque para regalo</span>@if($giftCost > 0) <x-precio :valor="$giftCost"/> @else <span class="text-success">Gratis</span> @endif</div>
+                @endif
                 <div class="ct-row text-muted">
                     <span>Envío</span>
                     @if(!$shipping) <span>Se calcula en el checkout</span>
                     @elseif($shipping['costo'] > 0) <x-precio :valor="$shipping['costo']"/>
                     @else <span class="text-success">Gratis</span> @endif
                 </div>
-                <div class="ct-total"><span>Total</span><x-precio :valor="$subtotal + $discount + ($shipping['costo'] ?? 0)"/></div>
+                <div class="ct-total"><span>Total</span><x-precio :valor="$subtotal + $discount + ($gift ? $giftCost : 0) + ($shipping['costo'] ?? 0)"/></div>
 
                 <a href="{{ route('checkout.show') }}" class="ct-pay">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>

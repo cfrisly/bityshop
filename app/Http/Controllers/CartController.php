@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Middleware\CuponesDeSesion;
+use App\Support\Ajustes;
 use App\Support\Carrito;
 use App\Support\Envio;
 use Illuminate\Http\Request;
@@ -17,10 +18,32 @@ use Vanilo\Promotion\Models\CouponProxy;
 
 class CartController extends Controller
 {
-    public function add(Product $product)
+    public const REGALO = 'carrito.regalo';
+
+    public function add(Product $product, Request $request)
     {
-        Cart::addItem($product);
+        $qty = max(1, min(99, (int) $request->input('qty', 1)));
+        Cart::addItem($product, $qty);
+
+        // Empaque para regalo (se cobra el costo configurado en Admin → Configuración → Tienda)
+        if ($request->boolean('regalo') && Ajustes::regaloCosto() !== null) {
+            session([self::REGALO => true]);
+        }
+
+        // "Comprar" lleva directo al pago
+        if ($request->input('accion') === 'comprar') {
+            return redirect()->route('checkout.show');
+        }
+
         flash()->success($product->name . ' se agregó al carrito');
+
+        return redirect()->route('cart.show');
+    }
+
+    /** Activa o quita el empaque para regalo desde el carrito */
+    public function toggleGift(Request $request)
+    {
+        session([self::REGALO => $request->boolean('regalo') && Ajustes::regaloCosto() !== null]);
 
         return redirect()->route('cart.show');
     }
@@ -143,6 +166,8 @@ class CartController extends Controller
             'subtotal' => Carrito::subtotal(),
             'discount' => Carrito::descuento(),
             'coupons' => session(CuponesDeSesion::CLAVE, []),
+            'giftCost' => Ajustes::regaloCosto(),
+            'gift' => Carrito::regalo(),
             'shipping' => $best,
             'shippingFrom' => $cheapest['costo'] ?? null,
             'noCoverage' => $address !== null && $best === null,

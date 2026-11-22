@@ -27,8 +27,10 @@ class ProductShowPageTest extends TestCase
         $response->assertStatus(200);
 
         $response->assertSee('Dacia Logan');
-        $response->assertSee(format_price($product->price));
-        $response->assertSee('Add to cart');
+        // El precio se muestra separado en entero y centavos (Q11,500<sup>00</sup>)
+        $response->assertSee('Q11,500');
+        $response->assertSee('Agregar al carrito');
+        $response->assertSee('Comprar');
         $response->assertSee(route('cart.add', $product));
     }
 }

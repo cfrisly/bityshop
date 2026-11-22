@@ -7,6 +7,7 @@ use App\Http\Requests\CheckoutRequest;
 use App\Support\Carrito;
 use App\Support\Envio;
 use Vanilo\Checkout\Events\ShippingMethodSelected;
+use Vanilo\Adjustments\Adjusters\SimpleFee;
 use Vanilo\Checkout\Events\CouponUtilized;
 use Konekt\Address\Models\CountryProxy;
 use Vanilo\Cart\Contracts\CartManager;
@@ -65,6 +66,7 @@ class CheckoutController extends Controller
         }
 
         $usedCoupons = Carrito::descuento() < 0 ? $this->checkout->getCoupons() : [];
+        $giftCost = Carrito::regalo() ? Carrito::costoRegalo() : null;
 
         /** @var Order $order */
         $order = $orderFactory->createFromCheckout($this->checkout);
@@ -72,13 +74,20 @@ class CheckoutController extends Controller
             $order->user_id = auth()->id();
         }
         $order->notes = $request->get('notes');
+        // Empaque para regalo: queda en las notas del pedido y, si tiene costo, como cargo aparte
+        if ($giftCost !== null) {
+            $order->notes = trim('[REGALO] Empacar para regalo' . "\n" . $order->notes);
+            if ($giftCost > 0) {
+                $order->adjustments()->create(new SimpleFee($giftCost))->update(['title' => 'Empaque para regalo']);
+            }
+        }
         $order->save();
 
         // Cuenta el uso de cada cupón y lo quita de la sesión
         foreach ($usedCoupons as $code) {
             event(new CouponUtilized($this->checkout, $code));
         }
-        session()->forget(CuponesDeSesion::CLAVE);
+        session()->forget([CuponesDeSesion::CLAVE, CartController::REGALO]);
 
         $this->cart->destroy();
 

@@ -35,10 +35,22 @@ class Carrito
         return round((float) Cart::total() - $ajustes - self::subtotal(), 2);
     }
 
-    /** Productos + descuentos (sin envío) */
+    /** ¿El cliente pidió empaque para regalo? (y la opción sigue activa en el admin) */
+    public static function regalo(): bool
+    {
+        return (bool) session(\App\Http\Controllers\CartController::REGALO) && Ajustes::regaloCosto() !== null && !Cart::isEmpty();
+    }
+
+    /** Costo del empaque para regalo si el cliente lo pidió */
+    public static function costoRegalo(): float
+    {
+        return self::regalo() ? (float) Ajustes::regaloCosto() : 0.0;
+    }
+
+    /** Productos + descuentos + empaque para regalo (sin envío) */
     public static function totalSinEnvio(): float
     {
-        return round(self::subtotal() + self::descuento(), 2);
+        return round(self::subtotal() + self::descuento() + self::costoRegalo(), 2);
     }
 
     /** Total de productos que usan las tarifas para el envío gratis */

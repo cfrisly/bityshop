@@ -22,6 +22,12 @@ class AppServiceProvider extends ServiceProvider
         }
 
         $this->app->concord->registerModel(\Konekt\User\Contracts\User::class, \App\User::class);
+
+        // Ajustes propios de la tienda (Admin → Configuración → Tienda)
+        \App\Support\Ajustes::registrar($this->app['gears.settings_registry']);
+        $this->app->afterResolving('appshell.settings_tree_builder', function ($builder) {
+            \App\Support\Ajustes::pantallaAdmin($builder);
+        });
     }
 
     /**

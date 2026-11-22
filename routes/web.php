@@ -35,6 +35,7 @@ Route::group(['prefix' => 'cart', 'as' => 'cart.'], function() {
    Route::post('remove/{cart_item}', 'CartController@remove')->name('remove');
    Route::post('favorito/{cart_item}', 'CartController@moveToFavorites')->middleware('auth')->name('favorite');
    Route::post('cupon', 'CartController@applyCoupon')->name('coupon.apply');
+   Route::post('regalo', 'CartController@toggleGift')->name('gift');
    Route::post('cupon/{code}/quitar', 'CartController@removeCoupon')->name('coupon.remove');
 });
 
