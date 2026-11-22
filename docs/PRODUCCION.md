@@ -53,7 +53,7 @@ chown -R www-data:www-data storage bootstrap/cache
 
 ## 3. Si ya tienes una base de datos con la versión anterior (Vanilo 4)
 
-La actualización **solo agrega** tablas y columnas: son 32 migraciones nuevas y ninguna borra datos. Se probó con una base v4 que tenía pedidos, clientes, direcciones y favoritos, y después de migrar los conteos de todas las tablas fueron idénticos.
+La actualización **solo agrega** tablas y columnas: son 33 migraciones nuevas (32 de Vanilo y 1 propia que asigna el país por defecto al canal) y ninguna borra datos. Se probó con una base v4 que tenía pedidos, clientes, direcciones y favoritos, y después de migrar los conteos de todas las tablas fueron idénticos.
 
 1. **Respaldo primero:**
    ```bash
@@ -129,7 +129,7 @@ Si más adelante agregas correos de pedido o tareas programadas, añade este cro
 Ninguno de estos puntos rompe nada, pero un cliente real los va a notar:
 
 1. **Pasarela de pago.** Las pasarelas instaladas (Mollie, Netopia, EuPlatesc, Adyen y Braintree) son europeas o necesitan contrato. Para Guatemala:
-   - **PayPal** ya tiene integración oficial (`vanilo/paypal`); solo falta poner las credenciales en `.env`.
+   - **PayPal** ya tiene integración oficial (`vanilo/paypal`); solo falta poner las credenciales en `.env`. **Mientras no estén, desactiva el método PayPal en el admin**: si un cliente lo elige sin credenciales, el checkout da error 500.
    - Para pagar con tarjeta local (BAC, Visanet/Cybersource, Recurrente, etc.) hace falta un *driver* propio de Vanilo.
    - Un método "Pago contra entrega" o "Transferencia" se crea desde el admin, en *Payment methods*, con la pasarela **Null / Offline**.
 2. **Nombre de la tienda.** Pon `APP_NAME="Bity Shop"` en `.env`. Hoy el encabezado dice "Vanilo Demo".

@@ -19,7 +19,7 @@ class ProductController extends Controller
         $this->productFinder = $productFinder;
     }
 
-    public function index(ProductIndexRequest $request, string $taxonomyName = null, Taxon $taxon = null)
+    public function index(ProductIndexRequest $request, ?string $taxonomyName = null, ?Taxon $taxon = null)
     {
         $taxonomies = TaxonomyProxy::get();
         $properties = PropertyProxy::get();
