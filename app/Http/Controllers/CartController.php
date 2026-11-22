@@ -50,7 +50,11 @@ class CartController extends Controller
         }
 
         $qty = (int) $request->get('qty', $cart_item->getQuantity());
-        $cart_item->quantity = $qty;
+        // Cantidad 0 o negativa: se quita el producto del carrito en lugar de guardar un valor inválido
+        if ($qty < 1) {
+            return $this->remove($cart_item);
+        }
+        $cart_item->quantity = min($qty, 999);
         $cart_item->save();
 
         flash()->info(__(':cart_item has been updated', ['cart_item' => $cart_item->getBuyable()->getName()]));

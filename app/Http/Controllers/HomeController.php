@@ -66,7 +66,7 @@ class HomeController extends Controller
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'phone' => ['nullable', 'string', 'max:30'],
             'type' => ['required', Rule::in(['individual', 'organization'])],
-            'company_name' => ['nullable', 'required_if:type, organization', 'string', 'max:255'],
+            'company_name' => ['nullable', 'required_if:type,organization', 'string', 'max:255'],
             'tax_nr' => ['nullable', 'string', 'max:30'],
             // Direccion
             'address'      => ['nullable', 'string', 'max:255'],

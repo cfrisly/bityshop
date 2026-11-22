@@ -254,7 +254,8 @@
                     @endif
                 </a>
 
-                {{-- Corazon de favoritos --}}
+                {{-- Corazon de favoritos (solo productos simples: la tabla favorites guarda IDs de la tabla products) --}}
+                @if ($product instanceof \Vanilo\Product\Contracts\Product)
                 @auth
                     @php $isFav = in_array($product->id, $favoriteIds); @endphp
                     <form action="{{ route('favorites.toggle', $product->id) }}" method="POST"
@@ -275,6 +276,7 @@
                             </svg>
                         </a>
                 @endauth
+                @endif
 
             </div>
 

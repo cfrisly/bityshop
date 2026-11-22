@@ -54,9 +54,14 @@ class ProductController extends Controller
     }
 
     public function search(ProductIndexRequest $request){
-        $q = trim($request->q);
+        $q = trim((string) $request->q);
 
-        $taxonomies = TaxonomyProxy::get();
+        // Busqueda vacia: se muestra el catalogo normal
+        if ($q === '') {
+            return redirect()->route('product.index');
+        }
+
+        $allTaxonomies = TaxonomyProxy::get();
         $properties = PropertyProxy::get();
 
         //Busca por nombre del producto
@@ -120,7 +125,8 @@ class ProductController extends Controller
         //Mostrar los resultados
         return view('product.index', [
             'products' => $products,
-            'taxonomies' => $taxonomies,
+            // El menu lateral muestra todas las categorias, no solo las que coinciden con la busqueda
+            'taxonomies' => $allTaxonomies,
             'taxon' => null,
             'properties' => $properties,
             'filters' => []

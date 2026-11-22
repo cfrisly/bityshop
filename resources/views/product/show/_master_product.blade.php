@@ -43,29 +43,29 @@
     <script>
       document.addEventListener("alpine:init", () => {
         Alpine.data('masterProduct', () => ({
-          selectedId: {{$product->variants->first()->id}},
+          selectedId: @js($product->variants->first()?->id),
           variants: {
             @foreach($product->variants as $variant)
               "{{$variant->id}}": {
-                name: "{{$variant->name}}",
-                price: {{$variant->price}},
-                originalPrice: {{$variant->original_price}},
-                priceFmt: "{{ format_price($variant->price) }}",
-                originalPriceFmt: "{{ format_price($variant->original_price) }}",
-                description: "{{ nl2br($variant->description ?? $product->description) }}",
-                imageUrl: "{{ $variant->getImageUrl('medium') ?: ($product->getImageUrl('medium') ?: '/images/product-medium.jpg') }}",
+                name: @js($variant->name),
+                price: @js((float) $variant->price),
+                originalPrice: @js($variant->original_price !== null ? (float) $variant->original_price : null),
+                priceFmt: @js(format_price($variant->price)),
+                originalPriceFmt: @js($variant->original_price !== null ? format_price($variant->original_price) : null),
+                description: @js(nl2br(e($variant->description ?? $product->description))),
+                imageUrl: @js($variant->getImageUrl('medium') ?: ($product->getImageUrl('medium') ?: '/images/product-medium.jpg')),
                 images: [
                   @forelse($variant->getMedia() as $media)
-                    { medium: "{{ $media->getUrl('medium') }}", thumbnail: "{{ $media->getUrl('thumbnail') }}" },
+                    { medium: @js($media->getUrl('medium')), thumbnail: @js($media->getUrl('thumbnail')) },
                   @empty
-                    { medium: "{{ $product->getImageUrl('medium') ?: '/images/product-medium.jpg' }}", thumbnail: "{{ $product->getImageUrl('thumbnail') ?: '/images/product.jpg' }}" },
+                    { medium: @js($product->getImageUrl('medium') ?: '/images/product-medium.jpg'), thumbnail: @js($product->getImageUrl('thumbnail') ?: '/images/product.jpg') },
                   @endforelse
                 ]
               },
             @endforeach
           },
           get selectedVariant() {
-            return this.selectedId ? this.variants[this.selectedId] : {priceFmt: '{{format_price($product->price)}}'};
+            return this.selectedId ? this.variants[this.selectedId] : {priceFmt: @js(format_price($product->price))};
           },
         }))
       });

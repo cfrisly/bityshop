@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
@@ -32,11 +31,12 @@ class MollieController extends Controller
     {
         Log::debug('Mollie webhook:', $request->toArray());
 
-        $response = PaymentGateways::make('mollie')->processPaymentResponse($request->input('id'));
+        // La pasarela espera la petición completa (lee el campo "id" internamente)
+        $response = PaymentGateways::make('mollie')->processPaymentResponse($request);
         $payment = Payment::findByPaymentId($response->getPaymentId());
 
         if (!$payment) {
-            return new ModelNotFoundException('Could not locate payment with id ' . $response->getPaymentId());
+            abort(404, 'Could not locate payment with id ' . $response->getPaymentId());
         }
 
         $handler = new PaymentResponseHandler($payment, $response);

@@ -1,8 +1,4 @@
 <?php
-/*
-Route::get('/', function () {
-   return view('welcome');
-});*/
 use App\Http\Controllers\OrderController;
 
 Route::get('/', 'ProductController@index');
@@ -60,10 +56,6 @@ Route::group(['prefix' => 'payment/paypal', 'as' => 'payment.paypal.'], function
    Route::any('webhook', 'PaypalReturnController@webhook')->name('webhook');
 });
 
-Route::group(['prefix' => 'payment/simplepay', 'as' => 'payment.simplepay.'], function() {
-   Route::get('return', 'SimplepayReturnController@return')->name('return');
-   Route::post('silent', 'SimplepayReturnController@silent')->name('silent');
-});
 
 Route::group(['prefix' => 'payment/mollie', 'as' => 'payment.mollie.'], function() {
    Route::get('{paymentId}/return', 'MollieController@return')->name('return');
@@ -79,6 +71,3 @@ Route::group(['prefix' => 'payment/braintree', 'as' => 'payment.braintree.'], fu
    Route::post('{paymentId}/submit', 'BraintreeController@submit')->name('submit');
 });
 
-Route::group(['prefix' => 'payment/stripe', 'as' => 'payment.stripe.'], function() {
-   Route::post('webhook', 'StripeReturnController@webhook');
-});

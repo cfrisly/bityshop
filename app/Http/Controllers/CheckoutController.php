@@ -67,10 +67,9 @@ class CheckoutController extends Controller
         PaymentHistory::begin($payment);
         $paymentRequest = $paymentMethod
             ->getGateway()
-            ->createPaymentRequest($payment, options: ['webhookUrl' => route('payment.mollie.webhook'), 'redirectUrl' => route('payment.mollie.return', $payment->hash)]);
+            ->createPaymentRequest($payment, options: $this->gatewayOptions($paymentMethod->getGatewayName(), $payment));
 
-        // @todo the method exists check can be removed after v4 upgrade
-        if (method_exists($paymentRequest, 'getRemoteId') && $paymentRequest->getRemoteId()) {
+        if ($paymentRequest->getRemoteId()) {
             $payment->update([
                 'remote_id' => $paymentRequest->getRemoteId(),
             ]);
@@ -80,5 +79,17 @@ class CheckoutController extends Controller
             'order' => $order,
             'paymentRequest' => $paymentRequest,
         ]);
+    }
+
+    /** Opciones que necesita cada pasarela (antes se mandaban las de Mollie a todas) */
+    private function gatewayOptions(string $gateway, $payment): array
+    {
+        return match ($gateway) {
+            'mollie' => [
+                'webhookUrl' => route('payment.mollie.webhook'),
+                'redirectUrl' => route('payment.mollie.return', $payment->hash),
+            ],
+            default => [],
+        };
     }
 }
