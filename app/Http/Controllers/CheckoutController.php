@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\CuponesDeSesion;
 use App\Http\Requests\CheckoutRequest;
+use App\Support\Carrito;
+use Vanilo\Adjustments\Adjusters\SimpleShippingFee;
+use Vanilo\Checkout\Events\CouponUtilized;
 use Konekt\Address\Models\CountryProxy;
 use Vanilo\Cart\Contracts\CartManager;
 use Vanilo\Checkout\Contracts\Checkout;
@@ -53,6 +57,10 @@ class CheckoutController extends Controller
         $this->checkout->setCustomAttribute('notes', $request->get('notes'));
         $this->checkout->setCart($this->cart);
 
+        // Se calcula antes de vaciar el carrito
+        $shippingCost = Carrito::costoEnvio();
+        $usedCoupons = Carrito::descuento() < 0 ? $this->checkout->getCoupons() : [];
+
         /** @var Order $order */
         $order = $orderFactory->createFromCheckout($this->checkout);
         if (auth()->check()){
@@ -60,6 +68,18 @@ class CheckoutController extends Controller
         }
         $order->notes = $request->get('notes');
         $order->save();
+
+        // El envío que se mostró en el carrito se cobra en el pedido
+        if ($shippingCost > 0) {
+            $order->adjustments()->create(new SimpleShippingFee($shippingCost))->update(['title' => 'Envío']);
+        }
+
+        // Cuenta el uso de cada cupón y lo quita de la sesión
+        foreach ($usedCoupons as $code) {
+            event(new CouponUtilized($this->checkout, $code));
+        }
+        session()->forget(CuponesDeSesion::CLAVE);
+
         $this->cart->destroy();
 
         $paymentMethod = $request->paymentMethod();

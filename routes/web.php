@@ -33,6 +33,9 @@ Route::group(['prefix' => 'cart', 'as' => 'cart.'], function() {
    Route::post('adv/{masterProductVariant}', 'CartController@addVariant')->name('add-variant');
    Route::post('update/{cart_item}', 'CartController@update')->name('update');
    Route::post('remove/{cart_item}', 'CartController@remove')->name('remove');
+   Route::post('favorito/{cart_item}', 'CartController@moveToFavorites')->middleware('auth')->name('favorite');
+   Route::post('cupon', 'CartController@applyCoupon')->name('coupon.apply');
+   Route::post('cupon/{code}/quitar', 'CartController@removeCoupon')->name('coupon.remove');
 });
 
 Route::group(['prefix' => 'checkout', 'as' => 'checkout.'], function() {
