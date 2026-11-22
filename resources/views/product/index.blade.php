@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
 @section('categories-menu')
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-light rounded-3 px-2 mb-2" style="background:#e3f4f5;">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#categoriesMenu" aria-controls="categoriesMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="categoriesMenu">
             <ul class="navbar-nav">
-            @foreach($taxonomies as $taxonomy)
+            @foreach(\App\Support\MenuCategorias::arbol() as $taxonomy)
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{ $taxonomy->name }}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        @include('product.index._category_level', ['taxons' => $taxonomy->rootLevelTaxons()])
+                        @include('product.index._category_level', ['taxons' => $taxonomy->raices])
                     </div>
                 </li>
             @endforeach
@@ -24,7 +24,8 @@
 @stop
 
 @section('breadcrumbs')
-    <li class="breadcrumb-item"><a href="{{ route('product.index') }}">All Products</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('product.index') }}">Todos los productos</a></li>
+    @isset($heading)<li class="breadcrumb-item active">{{ $heading }}</li>@endisset
     @if($taxon)
         @include('product._breadcrumbs')
     @endif
@@ -61,9 +62,14 @@
                     </div>
                 @endif
 
+                @if($products->isEmpty() && isset($heading))
+                    <h1 class="h3 fw-bold mb-3">{{ $heading }}</h1>
+                    <div class="alert alert-info">{{ $emptyMessage }}</div>
+                @endif
+
                 @if(!$products->isEmpty())
                 <div class="card card-default">
-                    <div class="card-header">{{ $taxon ?  'Products in ' . $taxon->name : 'All Products' }}</div>
+                    <div class="card-header">{{ $heading ?? ($taxon ? 'Productos en ' . $taxon->name : 'Todos los productos') }}</div>
 
                     <div class="card-body">
                         @include('product._grid', ['products' => $products])

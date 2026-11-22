@@ -28,6 +28,17 @@ class AppServiceProvider extends ServiceProvider
         $this->app->afterResolving('appshell.settings_tree_builder', function ($builder) {
             \App\Support\Ajustes::pantallaAdmin($builder);
         });
+
+        // Menú del admin: Configuración → Logos de temporada
+        $this->app->booted(function () {
+            $menu = \Konekt\Menu\Facades\Menu::get('appshell');
+            if ($menu && $settings = $menu->getItem('settings_group')) {
+                $settings->addSubItem('logos', 'Logos de temporada', ['route' => 'tienda.admin.logo.index'])
+                    ->data('icon', 'image')
+                    ->activateOnUrls('/admin/logo*')
+                    ->allowIfUserCan('list logos');
+            }
+        });
     }
 
     /**

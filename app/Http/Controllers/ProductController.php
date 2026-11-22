@@ -45,6 +45,39 @@ class ProductController extends Controller
         ]);
     }
 
+    /** Ofertas: productos con precio original mayor al de venta, de mayor a menor descuento */
+    public function ofertas()
+    {
+        $products = ProductProxy::actives()
+            ->where('price', '>', 0)
+            ->whereColumn('original_price', '>', 'price')
+            ->orderByRaw('(original_price - price) / original_price DESC')
+            ->get();
+
+        return $this->listado($products, 'Ofertas', 'Por ahora no hay productos en oferta. ¡Vuelve pronto!');
+    }
+
+    /** Lo + nuevo: los productos agregados más recientemente */
+    public function nuevo()
+    {
+        $products = ProductProxy::actives()->latest('created_at')->latest('id')->limit(24)->get();
+
+        return $this->listado($products, 'Lo + nuevo', 'Todavía no hay productos nuevos.');
+    }
+
+    private function listado($products, string $heading, string $empty)
+    {
+        return view('product.index', [
+            'products' => $products,
+            'taxonomies' => TaxonomyProxy::get(),
+            'taxon' => null,
+            'properties' => PropertyProxy::get(),
+            'filters' => [],
+            'heading' => $heading,
+            'emptyMessage' => $empty,
+        ]);
+    }
+
     public function show(string $slug)
     {
         if (!$product = $this->productFinder->findBySlug($slug)) {

@@ -23,6 +23,8 @@ Route::put('/perfil', 'HomeController@updateProfile')->name('profile.update');
 
 Route::group(['prefix' => 'shop', 'as' => 'product.'], function() {
    Route::get('index', 'ProductController@index')->name('index');
+   Route::get('ofertas', 'ProductController@ofertas')->name('ofertas');
+   Route::get('nuevo', 'ProductController@nuevo')->name('nuevo');
    Route::get('c/{taxonomyName}/{taxon}', 'ProductController@index')->name('category');
    Route::get('p/{slug}', 'ProductController@show')->name('show');
 });
@@ -75,3 +77,7 @@ Route::group(['prefix' => 'payment/braintree', 'as' => 'payment.braintree.'], fu
    Route::post('{paymentId}/submit', 'BraintreeController@submit')->name('submit');
 });
 
+// Admin de la tienda (usa el panel de AppShell y sus permisos)
+Route::group(['prefix' => 'admin', 'as' => 'tienda.admin.', 'middleware' => ['auth', 'acl']], function () {
+   Route::resource('logo', \App\Http\Controllers\Admin\LogoController::class)->except('show');
+});
