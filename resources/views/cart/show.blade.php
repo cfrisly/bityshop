@@ -22,6 +22,9 @@
     .ct-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
     .ct-name { font-size: 18px; font-weight: 600; color: #292942 !important; line-height: 1.3; }
     .ct-price { font-size: 22px; font-weight: 700; white-space: nowrap; }
+    .ct-price--sale { color: #b12704; }
+    .ct-old { color: #6c757d; text-decoration: line-through; font-size: 14px; }
+    .ct-save { display: inline-block; background: #e7f6ec; color: #146c43; border-radius: 6px; padding: 1px 8px; font-size: 13px; font-weight: 600; margin: 2px 0; }
     .ct-ok { color: #198754; font-size: 14px; }
     .ct-warn { color: #b26b00; font-size: 14px; }
     .ct-eta { font-size: 14px; color: #495057; }
@@ -119,6 +122,8 @@
                         $url = route('product.show', $buyable->masterProduct ? $buyable->masterProduct->slug : $buyable->slug);
                         $stock = (float) ($buyable->stock ?? 0);
                         $inStock = $stock >= $item->quantity || (float) ($buyable->backorder ?? 0) > 0;
+                        $antes = (float) ($buyable->original_price ?? 0);
+                        $enOferta = $antes > (float) $item->price && (float) $item->price > 0;
                     @endphp
                     <div class="ct-item">
                         <a href="{{ $url }}" class="ct-img">
@@ -127,8 +132,16 @@
                         <div class="flex-grow-1" style="min-width: 0;">
                             <div class="d-flex justify-content-between gap-3">
                                 <a href="{{ $url }}" class="ct-name">{{ $buyable->getName() }}</a>
-                                <x-precio :valor="$item->price * $item->quantity" class="ct-price"/>
+                                <div class="text-end">
+                                    <x-precio :valor="$item->price * $item->quantity" class="ct-price {{ $enOferta ? 'ct-price--sale' : '' }}"/>
+                                    @if($enOferta)
+                                        <div class="ct-old">Q{{ number_format($antes * $item->quantity, 2) }}</div>
+                                    @endif
+                                </div>
                             </div>
+                            @if($enOferta)
+                                <div class="ct-save">Ahorras Q{{ number_format(($antes - $item->price) * $item->quantity, 2) }}</div>
+                            @endif
                             @if($inStock)
                                 <div class="ct-ok">Disponible</div>
                             @else

@@ -37,6 +37,10 @@ class CheckoutController extends Controller
 
     public function show()
     {
+        if ($cambiados = Carrito::actualizarPrecios()) {
+            flash()->info('Actualizamos el precio de: ' . implode(', ', $cambiados) . '.');
+        }
+
         $checkout = false;
 
         if ($this->cart->isNotEmpty()) {
@@ -58,6 +62,8 @@ class CheckoutController extends Controller
 
     public function submit(CheckoutRequest $request, OrderFactory $orderFactory)
     {
+        // El pedido siempre se cobra con el precio vigente
+        Carrito::actualizarPrecios();
         $this->checkout->update($request->all());
         $this->checkout->setCustomAttribute('notes', $request->get('notes'));
         $this->checkout->setCart($this->cart);

@@ -151,6 +151,10 @@ class CartController extends Controller
 
     public function show()
     {
+        if ($cambiados = Carrito::actualizarPrecios()) {
+            flash()->info('Actualizamos el precio de: ' . implode(', ', $cambiados) . '.');
+        }
+
         $address = Carrito::direccionCliente();
         $itemsTotal = Carrito::totalParaEnvio();
         $pickup = config('tienda.recoger');

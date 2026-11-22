@@ -12,6 +12,40 @@ use Vanilo\Cart\Facades\Cart;
  */
 class Carrito
 {
+    /**
+     * Pone en el carrito el precio vigente de cada producto.
+     * Vanilo guarda el precio del momento en que se agregó el producto; si después
+     * cambias el precio en el admin, el carrito seguía cobrando el anterior.
+     * Devuelve los nombres de los productos cuyo precio cambió.
+     */
+    public static function actualizarPrecios(): array
+    {
+        if (Cart::isEmpty()) {
+            return [];
+        }
+
+        $cambiados = [];
+        foreach (Cart::getItems() as $item) {
+            $buyable = $item->getBuyable();
+            if (!$buyable) {
+                continue;
+            }
+            $vigente = round((float) $buyable->getPrice(), 2);
+            if (abs($vigente - (float) $item->price) >= 0.01) {
+                $item->price = $vigente;
+                $item->save();
+                $cambiados[] = $buyable->getName();
+            }
+        }
+
+        if ($cambiados) {
+            // Recalcula promociones y envío con los precios nuevos
+            event(new \Vanilo\Cart\Events\CartUpdated(Cart::model()));
+        }
+
+        return $cambiados;
+    }
+
     /** Suma de precio x cantidad, sin descuentos */
     public static function subtotal(): float
     {

@@ -67,7 +67,7 @@
     .pd-ok { color: #198754; font-weight: 700; font-size: 20px; }
     .pd-out { color: #b02a37; font-weight: 700; font-size: 20px; }
     .pd-price { color: #b12704; font-size: 34px; font-weight: 700; }
-    .pd-old { color: #6c757d; text-decoration: line-through; font-size: 16px; }
+    .pd-old { color: #6c757d; text-decoration: line-through; font-size: 18px; }
     .pd-save { background: #e7f6ec; color: #146c43; border-radius: 6px; padding: 2px 8px; font-size: 14px; font-weight: 600; }
     .pd-ship { border: 1px solid #e3e6ea; border-left: 4px solid #5b5fe8; border-radius: 8px; padding: 12px 14px; background: #fff; }
     .pd-ship-title { color: #5b5fe8; font-weight: 700; letter-spacing: .02em; font-size: 14px; }
@@ -217,6 +217,9 @@
         <div class="col-lg-3">
             <div class="pd-box">
                 <x-precio :valor="$price" class="pd-price" style="font-size: 26px;"/>
+                @if($onSale)
+                    <div><span class="pd-old">Q{{ number_format($original, 2) }}</span> <span class="pd-save">-{{ round(($original - $price) / $original * 100) }}%</span></div>
+                @endif
                 <div class="{{ $available ? 'pd-ok' : 'pd-out' }}" style="font-size: 18px;">{{ $available ? 'Disponible.' : 'Agotado por ahora.' }}</div>
 
                 @if($shipping && $shippingKnown && $shipping['desde'])
