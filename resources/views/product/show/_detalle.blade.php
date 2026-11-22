@@ -77,11 +77,12 @@
     /* Caja de compra */
     .pd-box { border: 1px solid #dfe3e8; border-radius: 14px; padding: 18px; background: #fff; position: sticky; top: 16px; }
     .pd-buy { display: block; width: 100%; height: 48px; border: 0; border-radius: 10px; font-weight: 700; font-size: 17px; }
-    .pd-buy-cart { background: #0d47a1; color: #fff; }
-    .pd-buy-cart:hover { background: #0b3c88; }
-    .pd-buy-now { background: #ff6a00; color: #fff; margin-top: 10px; }
-    .pd-buy-now:hover { background: #e65f00; }
-    .pd-buy:disabled { background: #ced4da; }
+    /* Mismos colores que el carrito: "Comprar" como "Proceder al pago" y "Agregar" como "Seguir comprando" */
+    .pd-buy-cart { background: #fff; color: #292942; border: 1px solid #ced4da; }
+    .pd-buy-cart:hover { background: #f1f3f5; }
+    .pd-buy-now { background: #ffd43b; color: #292942; margin-top: 10px; }
+    .pd-buy-now:hover { background: #fcc419; }
+    .pd-buy:disabled { background: #e9ecef; color: #adb5bd; border-color: #e9ecef; }
     .pd-trust { border: 1px solid #dfe3e8; border-radius: 14px; padding: 14px; text-align: center; margin-top: 14px; }
     .pd-warranty { color: #e8590c; font-size: 14px; }
 
