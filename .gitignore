@@ -14,3 +14,6 @@ yarn-error.log
 .env
 .env.dusk.local
 .env.backup
+
+# macOS
+.DS_Store
