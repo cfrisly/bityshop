@@ -30,6 +30,12 @@
         </div>
     </div>
 
+<div class="mb-3 row">
+    <div class="col-md-10 offset-md-2">
+        <x-departamento name="shippingAddress[province_id]" country-select="shippingAddress[country_id]" :required="false" input-class="form-select"/>
+    </div>
+</div>
+
     <div class="mb-3 row">
 
         <label class="col-form-label col-md-2">{{ __('Address') }}</label>

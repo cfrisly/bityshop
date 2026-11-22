@@ -56,6 +56,7 @@
                    value="{{ old('address2', $addr->address2 ?? '') }}">
         </div>
 
+        <x-departamento class="col-md-4 mb-3" name="province_id" :value="$addr->province_id ?? null" country-select="country_id"/>
         <div class="col-md-4 mb-3">
             <label for="city" class="fw-bold">Ciudad / Municipio</label>
             <input type="text" name="city" id="city" class="form-control" required

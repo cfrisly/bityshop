@@ -1,7 +1,7 @@
 @php
     $sumSubtotal = \App\Support\Carrito::subtotal();
     $sumDescuento = \App\Support\Carrito::descuento();
-    $sumEnvio = \App\Support\Carrito::costoEnvio($sumSubtotal);
+    $sumBase = \App\Support\Carrito::totalSinEnvio();
 @endphp
 <table class="table table-borderless table-condensed">
     <tr>
@@ -14,13 +14,15 @@
         <td>-{{ format_price(abs($sumDescuento)) }}</td>
     </tr>
     @endif
+    @if(isset($shippingOptions) && $shippingOptions->isNotEmpty())
     <tr>
         <th class="pl-0">Envío:</th>
-        <td>{{ $sumEnvio > 0 ? format_price($sumEnvio) : 'Gratis' }}</td>
+        <td data-resumen-envio>Elige una opción</td>
     </tr>
+    @endif
 </table>
 
 <h5>{{ __('Total') }}:</h5>
-<h3>{{ format_price(\App\Support\Carrito::total()) }}</h3>
+<h3 data-resumen-total data-base="{{ $sumBase }}">{{ format_price($sumBase) }}</h3>
 
 <hr>

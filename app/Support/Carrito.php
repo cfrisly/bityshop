@@ -2,11 +2,13 @@
 
 namespace App\Support;
 
+use Illuminate\Support\Facades\Auth;
 use Vanilo\Cart\Facades\Cart;
 
 /**
- * Cálculos del carrito que comparten la página del carrito, el checkout y el pedido,
- * para que el total que ve el cliente sea siempre el mismo que se cobra.
+ * Cálculos del carrito que comparten la página del carrito y el checkout,
+ * para que el total que ve el cliente sea el mismo que se cobra.
+ * El envío sale de las tarifas del admin (ver App\Support\Envio).
  */
 class Carrito
 {
@@ -27,27 +29,32 @@ class Carrito
             return 0.0;
         }
 
-        return round((float) Cart::total() - self::subtotal(), 2);
+        // Cart::total() incluye los ajustes del carrito; el envío se cobra aparte en el pedido
+        $ajustes = Cart::model()?->adjustments()->byType(\Vanilo\Adjustments\Models\AdjustmentTypeProxy::SHIPPING())->total() ?? 0;
+
+        return round((float) Cart::total() - $ajustes - self::subtotal(), 2);
     }
 
-    /** Costo de envío según config/tienda.php (0 si alcanza el envío gratis) */
-    public static function costoEnvio(?float $subtotal = null): float
+    /** Productos + descuentos (sin envío) */
+    public static function totalSinEnvio(): float
     {
-        $subtotal ??= self::subtotal();
-        $gratisDesde = (float) config('tienda.envio.gratis_desde');
+        return round(self::subtotal() + self::descuento(), 2);
+    }
 
-        if ($subtotal <= 0 || ($gratisDesde > 0 && $subtotal >= $gratisDesde)) {
-            return 0.0;
+    /** Total de productos que usan las tarifas para el envío gratis */
+    public static function totalParaEnvio(): float
+    {
+        return Cart::isEmpty() ? 0.0 : round((float) Cart::getItems()->sum('total'), 2);
+    }
+
+    /** Dirección de envío predeterminada del cliente con sesión (o null) */
+    public static function direccionCliente()
+    {
+        $customer = Auth::user()?->customer;
+        if (!$customer || !$customer->default_shipping_address_id) {
+            return null;
         }
 
-        return max(0.0, (float) config('tienda.envio.costo'));
-    }
-
-    /** Total a pagar: productos + descuentos + envío */
-    public static function total(): float
-    {
-        $subtotal = self::subtotal();
-
-        return round($subtotal + self::descuento() + self::costoEnvio($subtotal), 2);
+        return $customer->addresses()->with(['province', 'country'])->find($customer->default_shipping_address_id);
     }
 }

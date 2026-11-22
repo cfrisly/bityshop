@@ -44,6 +44,8 @@
 
                                 @include('checkout._shipping_address', ['address' => $checkout->getShippingAddress()])
 
+                                @include('checkout._shipping_method')
+
                                 @include('checkout._payment')
 
 

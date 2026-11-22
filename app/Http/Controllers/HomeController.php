@@ -74,6 +74,7 @@ class HomeController extends Controller
             'city'         => ['nullable', 'required_with:address', 'string', 'max:100'],
             'postalcode'   => ['nullable', 'string', 'max:20'],
             'country_id'   => ['nullable', 'required_with:address', 'exists:countries,id'],
+            'province_id'  => ['nullable', Rule::requiredIf(fn () => $request->filled('address') && $request->input('country_id') === 'GT'), Rule::exists('provinces', 'id')->where('country_id', $request->input('country_id'))],
         ],[
             'firstname.required' => 'El nombre es obligatorio.',
             'email.required' => 'El correo es obligatorio.',
@@ -83,6 +84,8 @@ class HomeController extends Controller
             'city.required_with'       => 'Si ingresas una dirección, indica también la ciudad.',
             'country_id.required_with' => 'Si ingresas una dirección, selecciona el país.',
             'country_id.exists'        => 'El país seleccionado no es válido.',
+            'province_id.required'     => 'Selecciona el departamento.',
+            'province_id.exists'       => 'El departamento no corresponde al país.',
         ]);
 
         DB::transaction(function()use($user, $data) {
@@ -130,6 +133,7 @@ class HomeController extends Controller
                 $address->city         = $data['city'];
                 $address->postalcode   = $data['postalcode'] ?? null;
                 $address->country_id   = $data['country_id'];
+                $address->province_id  = $data['province_id'] ?? null;
                 // Ligar la dirección al cliente
                 $address->model_type   = $customer->getMorphClass();
                 $address->model_id     = $customer->id;

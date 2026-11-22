@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Middleware\CuponesDeSesion;
 use App\Support\Carrito;
+use App\Support\Envio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -127,24 +128,33 @@ class CartController extends Controller
 
     public function show()
     {
-        $subtotal = Carrito::subtotal();
-        $shipping = config('tienda.envio');
-        $freeFrom = (float) $shipping['gratis_desde'];
+        $address = Carrito::direccionCliente();
+        $itemsTotal = Carrito::totalParaEnvio();
         $pickup = config('tienda.recoger');
 
+        // Con dirección: tarifas que llegan a su departamento (la más barata primero)
+        $options = $address ? Envio::opciones($address->country_id, $address->province_id, $itemsTotal) : collect();
+        $best = $options->first();
+        // Sin dirección: precio "desde" con todas las tarifas activas
+        $cheapest = $address ? null : Envio::todosConCobertura($itemsTotal)->first();
+        $freeFrom = $best['gratis_desde'] ?? null;
+
         return view('cart.show', [
-            'subtotal' => $subtotal,
+            'subtotal' => Carrito::subtotal(),
             'discount' => Carrito::descuento(),
             'coupons' => session(CuponesDeSesion::CLAVE, []),
-            'shippingCost' => Carrito::costoEnvio($subtotal),
+            'shipping' => $best,
+            'shippingFrom' => $cheapest['costo'] ?? null,
+            'noCoverage' => $address !== null && $best === null,
             'freeFrom' => $freeFrom,
-            'missingForFree' => $freeFrom > 0 ? max(0, $freeFrom - $subtotal) : null,
-            'deliveryFrom' => $this->businessDaysFromToday($shipping['dias_min']),
-            'deliveryTo' => $this->businessDaysFromToday($shipping['dias_max']),
+            'missingForFree' => $freeFrom ? max(0, $freeFrom - $itemsTotal) : null,
+            'itemsTotal' => $itemsTotal,
             'pickupPlace' => $pickup['lugar'],
             'pickupHours' => $pickup['horario'],
             'pickupDate' => $this->businessDaysFromToday($pickup['dias']),
-            'location' => $this->customerLocation() ?? $shipping['zona'],
+            'location' => $address
+                ? collect([$address->city, $address->province?->name ?? $address->country?->name])->filter()->unique()->implode(', ')
+                : config('tienda.envio.zona'),
         ]);
     }
 
@@ -157,18 +167,5 @@ class CartController extends Controller
     private function isInCurrentCart(CartItem $cart_item): bool
     {
         return Cart::getItems()->contains(fn ($item) => $item->id == $cart_item->id);
-    }
-
-    /** Ciudad de la dirección de envío predeterminada del cliente */
-    private function customerLocation(): ?string
-    {
-        $customer = Auth::user()?->customer;
-        if (!$customer || !$customer->default_shipping_address_id) {
-            return null;
-        }
-
-        $address = $customer->addresses()->find($customer->default_shipping_address_id);
-
-        return $address ? trim($address->city . ', ' . ($address->country?->name ?? ''), ', ') : null;
     }
 }

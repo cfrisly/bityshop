@@ -243,6 +243,8 @@
                                                 value="{{ old('address2', $address->address2 ?? '') }}">
                                         </div>
 
+                                        <x-departamento class="col-md-4 mb-3" name="province_id" :value="$address->province_id ?? null" country-select="country_id" :required="false"/>
+
                                         <div class="col-md-4 mb-3">
                                             <label for="city" class="fw-bold">Ciudad / Municipio</label>
                                             <input type="text" id="city" name="city" class="form-control"
@@ -354,6 +356,11 @@
                                     <div class="col-md-4 mb-3">
                                         <label class="fw-bold">Zona / Referencia</label>
                                         <div class="form-control bg-light">{{ $address->address2 ?: '—' }}</div>
+                                    </div>
+
+                                    <div class="col-md-4 mb-3">
+                                        <label class="fw-bold">Departamento</label>
+                                        <div class="form-control bg-light">{{ optional($address->province)->name ?? '—' }}</div>
                                     </div>
 
                                     <div class="col-md-4 mb-3">
@@ -670,7 +677,7 @@
 
                                         <strong>{{ $addr->name }}</strong><br>
                                         {{ $addr->address }}{{ $addr->address2 ? ', ' . $addr->address2 : '' }}<br>
-                                        {{ $addr->city }}{{ $addr->postalcode ? ', ' . $addr->postalcode : '' }},
+                                        {{ $addr->city }}{{ $addr->province ? ', ' . $addr->province->name : '' }}{{ $addr->postalcode ? ', ' . $addr->postalcode : '' }},
                                         {{ optional($addr->country)->name ?? $addr->country_id }}<br>
 
                                         @if ($addr->phone)

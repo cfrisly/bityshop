@@ -99,6 +99,7 @@ class AddressController extends Controller
             'city' => ['required', 'string', 'max:100'],
             'postalcode' => ['nullable', 'string', 'max:20'],
             'country_id' => ['required', 'exists:countries,id'],
+            'province_id' => ['nullable', 'required_if:country_id,GT', Rule::exists('provinces', 'id')->where('country_id', $request->input('country_id'))],
             'is_default' => ['nullable'],
             ],[
             'name.required' => 'Indica el nombre de quien recibe.',
@@ -106,6 +107,8 @@ class AddressController extends Controller
             'city.required' => 'La ciudad o municipio es obligatoria',
             'country_id.required' => 'Selecciona el pais.',
             'country_id.exists' => 'El país seleccionado no es válido.',
+            'province_id.required_if' => 'Selecciona el departamento.',
+            'province_id.exists' => 'El departamento no corresponde al país.',
         ]);
     }
 
@@ -124,6 +127,7 @@ class AddressController extends Controller
         $address->city       = $data['city'];
         $address->postalcode = $data['postalcode'] ?? null;
         $address->country_id = $data['country_id'];
+        $address->province_id = $data['province_id'] ?? null;
     }
 
     /** Actualiza las direcciones privadas del cliente  */

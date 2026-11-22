@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Middleware\CuponesDeSesion;
 use App\Http\Requests\CheckoutRequest;
 use App\Support\Carrito;
-use Vanilo\Adjustments\Adjusters\SimpleShippingFee;
+use App\Support\Envio;
+use Vanilo\Checkout\Events\ShippingMethodSelected;
 use Vanilo\Checkout\Events\CouponUtilized;
 use Konekt\Address\Models\CountryProxy;
 use Vanilo\Cart\Contracts\CartManager;
@@ -48,6 +49,7 @@ class CheckoutController extends Controller
             'checkout' => $checkout,
             'countries' => CountryProxy::all(),
             'paymentMethods' => PaymentMethod::actives()->get(),
+            'shippingOptions' => $checkout ? Envio::todosConCobertura(Carrito::totalParaEnvio()) : collect(),
         ]);
     }
 
@@ -57,8 +59,11 @@ class CheckoutController extends Controller
         $this->checkout->setCustomAttribute('notes', $request->get('notes'));
         $this->checkout->setCart($this->cart);
 
-        // Se calcula antes de vaciar el carrito
-        $shippingCost = Carrito::costoEnvio();
+        // Tarifa del courier elegido: Vanilo la calcula y la agrega al carrito, y de ahí pasa al pedido
+        if ($request->filled('shipping_method_id')) {
+            event(new ShippingMethodSelected($this->checkout, null));
+        }
+
         $usedCoupons = Carrito::descuento() < 0 ? $this->checkout->getCoupons() : [];
 
         /** @var Order $order */
@@ -68,11 +73,6 @@ class CheckoutController extends Controller
         }
         $order->notes = $request->get('notes');
         $order->save();
-
-        // El envío que se mostró en el carrito se cobra en el pedido
-        if ($shippingCost > 0) {
-            $order->adjustments()->create(new SimpleShippingFee($shippingCost))->update(['title' => 'Envío']);
-        }
 
         // Cuenta el uso de cada cupón y lo quita de la sesión
         foreach ($usedCoupons as $code) {

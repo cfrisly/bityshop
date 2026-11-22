@@ -17,6 +17,12 @@
 </div>
 
 <div class="mb-3 row">
+    <div class="col-md-10 offset-md-2">
+        <x-departamento name="billpayer[address][province_id]" country-select="billpayer[address][country_id]" :required="true" input-class="form-select"/>
+    </div>
+</div>
+
+<div class="mb-3 row">
 
     <label class="col-form-label col-md-2">{{ __('Address') }}</label>
     <div class="col-md-10">

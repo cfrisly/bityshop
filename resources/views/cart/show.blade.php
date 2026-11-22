@@ -82,11 +82,25 @@
                 <div class="ct-info">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h11v9H3zM14 9h4l3 3v3h-7z"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
                     <div>
-                        <strong>Envío
-                            @if($shippingCost > 0) <x-precio :valor="$shippingCost"/> @else <span class="text-success">gratis</span> @endif
-                        </strong>
-                        · recibe entre {{ $deliveryFrom }} y {{ $deliveryTo }} en {{ $location }}
-                        <a href="{{ auth()->check() ? route('home', ['section' => 'addresses']) : route('login') }}">Cambiar</a>
+                        @if($shipping)
+                            <strong>Envío
+                                @if($shipping['costo'] > 0) <x-precio :valor="$shipping['costo']"/> @else <span class="text-success">gratis</span> @endif
+                            </strong>
+                            con {{ $shipping['courier'] ?? $shipping['nombre'] }}
+                            @if($shipping['desde']) · {{ $shipping['desde'] === $shipping['hasta'] ? 'recibe el ' . $shipping['desde'] : 'recibe entre ' . $shipping['desde'] . ' y ' . $shipping['hasta'] }} @endif
+                            en {{ $location }}
+                        @elseif($noCoverage)
+                            <strong>Aún no tenemos envío a {{ $location }}.</strong> Puedes elegir otra dirección en el checkout.
+                        @else
+                            <strong>
+                                @if($shippingFrom === null) Envío
+                                @elseif($shippingFrom <= 0) Envío <span class="text-success">gratis</span> disponible
+                                @else Envío desde <x-precio :valor="$shippingFrom"/>
+                                @endif
+                            </strong>
+                            · el costo exacto depende de tu departamento y se calcula en el checkout
+                        @endif
+                        <a href="{{ auth()->check() ? route('home', ['section' => 'addresses']) : route('login') }}">{{ auth()->check() ? 'Cambiar' : 'Inicia sesión' }}</a>
                     </div>
                 </div>
                 @if($pickupPlace)
@@ -127,7 +141,9 @@
                             @endif
                             <div class="ct-eta">
                                 <strong class="text-success">{{ $item->quantity }} {{ $item->quantity == 1 ? 'unidad' : 'unidades' }}</strong>
-                                {{ $item->quantity == 1 ? 'llega' : 'llegan' }} entre {{ $deliveryFrom }} y {{ $deliveryTo }}
+                                @if($shipping && $shipping['desde'])
+                                    {{ $item->quantity == 1 ? 'llega' : 'llegan' }} {{ $shipping['desde'] === $shipping['hasta'] ? 'el ' . $shipping['desde'] : 'entre ' . $shipping['desde'] . ' y ' . $shipping['hasta'] }}
+                                @endif
                                 @if($item->quantity > 1)
                                     <span class="text-muted">· <x-precio :valor="$item->price"/> c/u</span>
                                 @endif
@@ -189,7 +205,7 @@
                             <strong class="text-success">¡Tienes envío gratis!</strong>
                         @endif
                     </div>
-                    <div class="ct-bar"><div style="width: {{ min(100, round($subtotal / $freeFrom * 100)) }}%"></div></div>
+                    <div class="ct-bar"><div style="width: {{ min(100, round($itemsTotal / $freeFrom * 100)) }}%"></div></div>
                 @endif
 
                 {{-- Cupón --}}
@@ -237,9 +253,11 @@
                 @endif
                 <div class="ct-row text-muted">
                     <span>Envío</span>
-                    @if($shippingCost > 0) <x-precio :valor="$shippingCost"/> @else <span class="text-success">Gratis</span> @endif
+                    @if(!$shipping) <span>Se calcula en el checkout</span>
+                    @elseif($shipping['costo'] > 0) <x-precio :valor="$shipping['costo']"/>
+                    @else <span class="text-success">Gratis</span> @endif
                 </div>
-                <div class="ct-total"><span>Total</span><x-precio :valor="$subtotal + $discount + $shippingCost"/></div>
+                <div class="ct-total"><span>Total</span><x-precio :valor="$subtotal + $discount + ($shipping['costo'] ?? 0)"/></div>
 
                 <a href="{{ route('checkout.show') }}" class="ct-pay">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
