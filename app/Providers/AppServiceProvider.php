@@ -29,6 +29,17 @@ class AppServiceProvider extends ServiceProvider
             \App\Support\Ajustes::pantallaAdmin($builder);
         });
 
+        // Al borrar una promoción en el admin se borran antes sus reglas, acciones y cupones
+        // (la base de datos no dejaba borrarla mientras los tuviera)
+        \Vanilo\Promotion\Models\PromotionProxy::modelClass()::deleting(function ($promotion) {
+            $promotion->rules()->delete();
+            $promotion->actions()->delete();
+            $promotion->coupons()->delete();
+        });
+
+        // Promociones "Exclusivas": si aplica una, no se suman las demás
+        $this->app->bind(\Vanilo\Foundation\Listeners\CalculatePromotions::class, \App\Listeners\CalculatePromotions::class);
+
         // Menú del admin: Configuración → Logos de temporada
         $this->app->booted(function () {
             $menu = \Konekt\Menu\Facades\Menu::get('appshell');

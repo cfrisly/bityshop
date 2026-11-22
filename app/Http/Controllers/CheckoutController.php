@@ -9,6 +9,8 @@ use App\Support\Envio;
 use Vanilo\Checkout\Events\ShippingMethodSelected;
 use Vanilo\Adjustments\Adjusters\SimpleFee;
 use Vanilo\Checkout\Events\CouponUtilized;
+use Vanilo\Foundation\Events\PromotionUtilized;
+use Vanilo\Promotion\Models\PromotionProxy;
 use Konekt\Address\Models\CountryProxy;
 use Vanilo\Cart\Contracts\CartManager;
 use Vanilo\Checkout\Contracts\Checkout;
@@ -87,6 +89,12 @@ class CheckoutController extends Controller
         foreach ($usedCoupons as $code) {
             event(new CouponUtilized($this->checkout, $code));
         }
+
+        // Cuenta un uso por cada promoción aplicada al pedido (Vanilo no lo hacía,
+        // por eso el "Límite de uso" de las promociones nunca se cumplía)
+        foreach ($this->appliedPromotions($order) as $promotion) {
+            event(new PromotionUtilized($this->checkout, $promotion));
+        }
         session()->forget([CuponesDeSesion::CLAVE, CartController::REGALO]);
 
         $this->cart->destroy();
@@ -108,6 +116,23 @@ class CheckoutController extends Controller
             'order' => $order,
             'paymentRequest' => $paymentRequest,
         ]);
+    }
+
+    /** Promociones que dejaron un descuento en el pedido o en sus productos */
+    private function appliedPromotions(Order $order)
+    {
+        $morph = (new (PromotionProxy::modelClass()))->getMorphClass();
+        $adjustments = collect(iterator_to_array($order->adjustments()));
+        foreach ($order->items as $item) {
+            $adjustments = $adjustments->concat(iterator_to_array($item->adjustments()));
+        }
+
+        $ids = $adjustments
+            ->filter(fn ($a) => $a->source_type === $morph && $a->source_id)
+            ->pluck('source_id')
+            ->unique();
+
+        return $ids->isEmpty() ? collect() : PromotionProxy::whereIn('id', $ids)->get();
     }
 
     /** Opciones que necesita cada pasarela (antes se mandaban las de Mollie a todas) */
