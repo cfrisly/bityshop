@@ -72,6 +72,29 @@ class SearchTest extends TestCase
     }
 
     #[Test]
+    public function sugerencias_mientras_se_escribe_devuelven_productos()
+    {
+        $this->producto('Reloj Samsung', ['price' => 3500]);
+        $this->producto('Botas de trabajo');
+
+        $this->getJson(route('product.suggest', ['q' => 'relo']))
+            ->assertOk()
+            ->assertJsonCount(1, 'productos')
+            ->assertJsonPath('productos.0.nombre', 'Reloj Samsung')
+            ->assertJsonPath('productos.0.precio.entero', '3,500');
+    }
+
+    #[Test]
+    public function sugerencias_con_menos_de_dos_letras_no_buscan()
+    {
+        $this->producto('Reloj Samsung');
+
+        $this->getJson(route('product.suggest', ['q' => 'r']))
+            ->assertOk()
+            ->assertJsonCount(0, 'productos');
+    }
+
+    #[Test]
     public function sin_resultados_sugiere_la_palabra_correcta()
     {
         $this->producto('MacBook Pro');

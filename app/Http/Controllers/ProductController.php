@@ -166,6 +166,38 @@ class ProductController extends Controller
         return $result;
     }
 
+    /** Sugerencias mientras el cliente escribe en el buscador (JSON) */
+    public function suggest(\Illuminate\Http\Request $request)
+    {
+        $q = Buscador::normalizar($request->input('q'));
+        if (mb_strlen($q) < 2) {
+            return response()->json(['productos' => [], 'categorias' => [], 'sugerencia' => null]);
+        }
+
+        $products = Buscador::buscar($q, 6);
+        $precio = function ($valor) {
+            [$entero, $centavos] = explode('.', number_format((float) $valor, 2, '.', ','));
+
+            return ['entero' => $entero, 'centavos' => $centavos];
+        };
+
+        return response()->json([
+            'productos' => $products->map(fn ($p) => [
+                'nombre' => $p->name,
+                'url' => route('product.show', $p->slug),
+                'imagen' => $p->getThumbnailUrl() ?: '/images/product.jpg',
+                'precio' => $precio($p->price),
+                'antes' => (float) $p->original_price > (float) $p->price ? 'Q' . number_format((float) $p->original_price, 2) : null,
+            ])->values(),
+            'categorias' => Buscador::categorias($q)->map(fn ($t) => [
+                'nombre' => $t->name,
+                'url' => route('product.category', [$t->taxonomy->slug, $t]),
+            ])->values(),
+            'sugerencia' => $products->isEmpty() ? Buscador::sugerencia($q) : null,
+            'todos' => route('product.search', ['q' => $q]),
+        ])->header('Cache-Control', 'private, max-age=60');
+    }
+
     public function search(ProductIndexRequest $request)
     {
         $q = Buscador::normalizar($request->input('q'));

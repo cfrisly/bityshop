@@ -112,6 +112,22 @@ class Buscador
         return $cambio ? implode(' ', $sugeridas) : null;
     }
 
+    /** Categorías activas cuyo nombre coincide (para las sugerencias mientras se escribe) */
+    public static function categorias(string $q, int $limite = 3): Collection
+    {
+        $palabras = self::palabras($q);
+        if (empty($palabras)) {
+            return collect();
+        }
+
+        $query = TaxonProxy::query()->where('is_active', true)->with('taxonomy');
+        foreach ($palabras as $palabra) {
+            $query->where('name', 'like', '%' . self::escaparLike($palabra) . '%');
+        }
+
+        return $query->orderBy('name')->limit($limite)->get();
+    }
+
     /** Carga de una vez las imágenes, marcas y categorías que usa la cuadrícula de productos */
     public static function precargar(Collection $productos): Collection
     {

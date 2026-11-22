@@ -17,6 +17,7 @@ Route::post('/orders/{id}/cancel', [
 ])->name('orders.cancel');
 
 Route::get('/search', 'ProductController@search')->name('product.search');
+Route::get('/search/sugerencias', 'ProductController@suggest')->middleware('throttle:120,1')->name('product.suggest');
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::put('/perfil', 'HomeController@updateProfile')->name('profile.update');
