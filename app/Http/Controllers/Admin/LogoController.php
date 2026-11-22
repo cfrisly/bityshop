@@ -73,13 +73,13 @@ class LogoController extends Controller
         $data = $request->validate([
             'nombre' => ['required', 'string', 'max:100'],
             // Sin SVG: puede llevar código; PNG con fondo transparente se ve mejor sobre el celeste
-            'imagen' => [$nuevo ? 'required' : 'nullable', 'image', 'mimes:png,jpg,jpeg,webp,gif', 'max:2048'],
+            'imagen' => ['bail', $nuevo ? 'required' : 'nullable', 'image', 'mimes:png,jpg,jpeg,webp,gif', 'max:2048'],
             'desde' => [$esPrincipal ? 'nullable' : 'required', 'date'],
             'hasta' => [$esPrincipal ? 'nullable' : 'required', 'date', ...($request->boolean('cada_anio') ? [] : ['after_or_equal:desde'])],
         ], [
             'imagen.required' => 'Sube la imagen del logo.',
-            'imagen.image' => 'El archivo tiene que ser una imagen.',
-            'imagen.mimes' => 'Usa una imagen PNG, JPG, WEBP o GIF.',
+            'imagen.image' => 'Formato no válido. Usa PNG, JPG, WEBP o GIF (SVG no se acepta: expórtalo como PNG).',
+            'imagen.mimes' => 'Formato no válido. Usa PNG, JPG, WEBP o GIF (SVG no se acepta: expórtalo como PNG).',
             'imagen.max' => 'La imagen no puede pesar más de 2 MB.',
             'desde.required' => 'Indica desde qué fecha se muestra.',
             'hasta.required' => 'Indica hasta qué fecha se muestra.',

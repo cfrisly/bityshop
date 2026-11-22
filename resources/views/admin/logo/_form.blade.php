@@ -17,8 +17,14 @@
     @endif
     <input type="file" name="imagen" id="imagen" accept="image/png,image/jpeg,image/webp,image/gif"
            class="form-control @error('imagen') is-invalid @enderror" @required(!$logo->exists)>
-    <div class="form-text">PNG con fondo transparente, unos 300 × 80 px, máximo 2 MB. Se muestra sobre el fondo celeste de la barra.</div>
-    @error('imagen') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    <div class="alert alert-info py-2 px-3 mt-2 mb-0 small">
+        <strong>Formatos aceptados:</strong> PNG, JPG, WEBP o GIF · máximo 2 MB.<br>
+        <strong>SVG no se acepta</strong> por seguridad (puede contener código). Si tu logo está en SVG, expórtalo como PNG
+        desde tu programa de diseño (Canva, Illustrator, Figma...).<br>
+        Recomendado: PNG con fondo transparente, de unos 300 × 80 px. Se muestra sobre el fondo celeste de la barra.
+    </div>
+    <div id="imagen-error" class="text-danger small mt-1" style="display:none"></div>
+    @error('imagen') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
     <div id="preview" class="mt-2" style="display:none; background:#12808c; border-radius:8px; padding:10px 14px;">
         <img alt="Vista previa" style="max-height:44px; max-width:220px;">
     </div>
@@ -63,12 +69,33 @@
     document.getElementById('es_principal').addEventListener('change', function () {
         document.getElementById('fechas').style.display = this.checked ? 'none' : '';
     });
+    // Avisa al momento de elegir el archivo si el formato o el tamaño no sirven
     document.getElementById('imagen').addEventListener('change', function () {
         var box = document.getElementById('preview');
-        if (this.files && this.files[0]) {
-            box.querySelector('img').src = URL.createObjectURL(this.files[0]);
-            box.style.display = 'inline-block';
+        var error = document.getElementById('imagen-error');
+        var file = this.files && this.files[0];
+        error.style.display = 'none';
+        box.style.display = 'none';
+        if (!file) { return; }
+
+        var extension = (file.name.split('.').pop() || '').toLowerCase();
+        var mensaje = null;
+        if (['png', 'jpg', 'jpeg', 'webp', 'gif'].indexOf(extension) === -1) {
+            mensaje = extension === 'svg'
+                ? 'Los archivos SVG no se aceptan. Exporta tu logo como PNG y vuelve a subirlo.'
+                : 'El archivo ".' + extension + '" no es válido. Usa PNG, JPG, WEBP o GIF.';
+        } else if (file.size > 2 * 1024 * 1024) {
+            mensaje = 'La imagen pesa ' + (file.size / 1024 / 1024).toFixed(1) + ' MB. El máximo es 2 MB.';
         }
+
+        if (mensaje) {
+            error.textContent = mensaje;
+            error.style.display = 'block';
+            this.value = '';
+            return;
+        }
+        box.querySelector('img').src = URL.createObjectURL(file);
+        box.style.display = 'inline-block';
     });
 </script>
 @endpush
