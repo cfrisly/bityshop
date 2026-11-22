@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Vanilo\Product\Models\Product;
@@ -11,7 +12,7 @@ class ProductShowPageTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_can_show_active_product()
     {
         $product = Product::create([
@@ -21,7 +22,7 @@ class ProductShowPageTest extends TestCase
             'price' => 11500
         ]);
 
-        $response = $this->get(route('product.show', $product));
+        $response = $this->get(route('product.show', $product->slug));
 
         $response->assertStatus(200);
 

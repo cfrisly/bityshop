@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Vanilo\Product\Models\Product;
@@ -11,7 +12,7 @@ class ProductListPageTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_can_list_active_products()
     {
         $productA = Product::create([
@@ -43,12 +44,13 @@ class ProductListPageTest extends TestCase
         $response->assertSee('BMW M3');
         $response->assertSee('Daewoo Tico');
 
-        $response->assertSee(format_price($productA->price));
-        $response->assertSee(format_price($productB->price));
-        $response->assertSee(format_price($productC->price));
+        // La tarjeta muestra el precio separado en entero y decimales (Q11,500<sup>00</sup>)
+        $response->assertSee('11,500');
+        $response->assertSee('14,500');
+        $response->assertSee('1,500');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_list_only_active_products()
     {
        Product::create([
