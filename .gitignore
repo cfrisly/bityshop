@@ -17,3 +17,8 @@ yarn-error.log
 
 # macOS
 .DS_Store
+
+# Copias de trabajo locales de Claude Code y respaldos (no van al repositorio)
+/bityshop/
+*.bundle
+/respaldos/
