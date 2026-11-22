@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductIndexRequest;
 use Vanilo\Category\Contracts\Taxon;
 use Vanilo\Category\Models\TaxonomyProxy;
-use Vanilo\Category\Models\TaxonProxy;
 use Vanilo\Foundation\Search\ProductSearch;
 use Vanilo\Product\Models\Product;
 use Vanilo\Product\Models\ProductProxy;
 use App\Support\Ajustes;
+use App\Support\Buscador;
 use App\Support\Carrito;
 use App\Support\Envio;
 use Vanilo\Properties\Models\PropertyProxy;
@@ -37,7 +37,7 @@ class ProductController extends Controller
         }
 
         return view('product.index', [
-            'products'   => $this->productFinder->getResults(),
+            'products'   => Buscador::precargar($this->productFinder->getResults()),
             'taxonomies' => $taxonomies,
             'taxon'      => $taxon,
             'properties' => $properties,
@@ -68,7 +68,7 @@ class ProductController extends Controller
     private function listado($products, string $heading, string $empty)
     {
         return view('product.index', [
-            'products' => $products,
+            'products' => Buscador::precargar($products),
             'taxonomies' => TaxonomyProxy::get(),
             'taxon' => null,
             'properties' => PropertyProxy::get(),
@@ -102,7 +102,7 @@ class ProductController extends Controller
             'productType' => $productType,
             'images' => $this->images($product),
             'brand' => $brand,
-            'similar' => $this->similarProducts($product),
+            'similar' => Buscador::precargar($this->similarProducts($product)),
             'shipping' => $shipping,
             'shippingKnown' => $address !== null,
             'location' => $address
@@ -166,83 +166,27 @@ class ProductController extends Controller
         return $result;
     }
 
-    public function search(ProductIndexRequest $request){
-        $q = trim((string) $request->q);
+    public function search(ProductIndexRequest $request)
+    {
+        $q = Buscador::normalizar($request->input('q'));
 
         // Busqueda vacia: se muestra el catalogo normal
         if ($q === '') {
             return redirect()->route('product.index');
         }
 
-        $allTaxonomies = TaxonomyProxy::get();
-        $properties = PropertyProxy::get();
+        $products = Buscador::buscar($q);
+        $suggestion = $products->isEmpty() ? Buscador::sugerencia($q) : null;
 
-        //Busca por nombre del producto
-        $productsByName = (new ProductSearch())
-            ->nameContains($q)
-            ->getResults();
-
-        // Buscar Taxons
-        $taxons = TaxonProxy::query()
-            ->where('name', 'LIKE', "%$q%")
-            ->get();
-
-        //Busca Taxonomy
-        $taxonomies = TaxonomyProxy::query()
-            ->where('name', 'LIKE', "%$q%")
-            ->get();
-
-
-        //Reune todos los taxons que se debe buscar
-        $taxonsToSearch = collect();
-        
-        //Taxons encontrados directamente
-        foreach ($taxons as $taxon) {
-            $taxonsToSearch->push($taxon);
-        }
-
-        // Taxons pertenecientes a las taxonomies encontrados
-        foreach ($taxonomies as $taxonomy) {
-            $taxonomyTaxon = TaxonProxy::query()
-                ->where('taxonomy_id', $taxonomy->id)
-                ->get();
-
-            $taxonsToSearch = $taxonsToSearch->merge(
-                $taxonomyTaxon
-            );
-        }
-
-        //Buscar productos por categoria
-        $productsByCategory = collect();
-
-        if ($taxonsToSearch->isNotEmpty()) {
-            $productsByCategory = (new ProductSearch())
-                ->withinTaxons(
-                    $taxonsToSearch
-                        ->unique('id')
-                        ->values()
-                        ->all()
-                )
-                ->getResults();
-        }
-        
-        //Unir los resultados 
-        $products = $productsByName
-            ->merge($productsByCategory)
-            ->unique(function ($product) {
-                //return $product::class . '-' . $product->id;
-                return get_class($product) . '-' . $product->id;
-            })
-            ->values();
-
-        //Mostrar los resultados
         return view('product.index', [
             'products' => $products,
-            // El menu lateral muestra todas las categorias, no solo las que coinciden con la busqueda
-            'taxonomies' => $allTaxonomies,
+            'taxonomies' => TaxonomyProxy::get(),
             'taxon' => null,
-            'properties' => $properties,
-            'filters' => []
+            'properties' => PropertyProxy::get(),
+            'filters' => [],
+            'heading' => 'Resultados para “' . $q . '” (' . $products->count() . ')',
+            'emptyMessage' => 'No encontramos productos para “' . $q . '”. Revisa cómo está escrito o prueba con otra palabra.',
+            'suggestion' => $suggestion,
         ]);
     }
 }

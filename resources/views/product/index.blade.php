@@ -64,7 +64,16 @@
 
                 @if($products->isEmpty() && isset($heading))
                     <h1 class="h3 fw-bold mb-3">{{ $heading }}</h1>
-                    <div class="alert alert-info">{{ $emptyMessage }}</div>
+                    <div class="alert alert-info">
+                        {{ $emptyMessage }}
+                        @if(!empty($suggestion))
+                            <div class="mt-2 fs-5">¿Quisiste decir
+                                <a href="{{ route('product.search', ['q' => $suggestion]) }}" class="fw-bold">{{ $suggestion }}</a>?
+                            </div>
+                        @endif
+                    </div>
+                    <a href="{{ route('product.index') }}" class="btn btn-outline-secondary btn-sm">Ver todos los productos</a>
+                    <a href="{{ route('product.ofertas') }}" class="btn btn-outline-secondary btn-sm">Ver ofertas</a>
                 @endif
 
                 @if(!$products->isEmpty())

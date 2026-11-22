@@ -81,7 +81,7 @@
 
             {{-- Buscador --}}
             <form action="{{ route('product.search') }}" method="GET" class="bn-search" role="search">
-                <input type="search" name="q" value="{{ request('q') }}" placeholder="¿Qué producto estás buscando?" aria-label="Buscar productos">
+                <input type="search" name="q" value="{{ request('q') }}" placeholder="¿Qué producto estás buscando?" aria-label="Buscar productos" maxlength="100" enterkeyhint="search">
                 <button type="submit" aria-label="Buscar">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
                 </button>
