@@ -128,7 +128,7 @@
                         <ul class="list-unstyled">
                             <li><a href="#">Mi perfil</a></li>
                             <li><a href="#">Mis Pedidos</a></li>
-                            <li><a href="#">Faboritos</a></li>
+                            <li><a href="#">Favoritos</a></li>
                         </ul>
                     </div>
 
