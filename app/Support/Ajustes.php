@@ -31,17 +31,17 @@ class Ajustes
 
     public static function pantallaAdmin(TreeBuilder $ui): void
     {
-        $ui->addRootNode('tienda', 'Tienda')
-            ->addChildNode('tienda', 'tienda_idioma', 'Idioma / Language')
-            ->addSettingItem('tienda_idioma', ['select', ['label' => 'Idioma del sistema (tienda y administración) / System language']], self::IDIOMA)
-            ->addChildNode('tienda', 'tienda_regalo', 'Empaque para regalo')
-            ->addSettingItem('tienda_regalo', ['checkbox', ['label' => 'Ofrecer empaque para regalo']], self::REGALO_ACTIVO)
-            ->addSettingItem('tienda_regalo', ['text', ['label' => 'Costo del empaque (Q, 0 = gratis)']], self::REGALO_COSTO)
-            ->addChildNode('tienda', 'tienda_contacto', 'Contacto')
-            ->addSettingItem('tienda_contacto', ['text', ['label' => 'Número de WhatsApp con código de país (ej. 50255551234). Vacío = no se muestra']], self::WHATSAPP)
-            ->addChildNode('tienda', 'tienda_garantia', 'Garantía')
-            ->addSettingItem('tienda_garantia', ['text', ['label' => 'Texto corto de garantía (página del producto)']], self::GARANTIA)
-            ->addSettingItem('tienda_garantia', ['text', ['label' => 'Políticas de garantía (se muestran al hacer clic)']], self::POLITICAS);
+        $ui->addRootNode('tienda', __('Tienda'))
+            ->addChildNode('tienda', 'tienda_idioma', __('Idioma'))
+            ->addSettingItem('tienda_idioma', ['select', ['label' => __('Idioma del sistema (tienda y administración)')]], self::IDIOMA)
+            ->addChildNode('tienda', 'tienda_regalo', __('Empaque para regalo'))
+            ->addSettingItem('tienda_regalo', ['checkbox', ['label' => __('Ofrecer empaque para regalo')]], self::REGALO_ACTIVO)
+            ->addSettingItem('tienda_regalo', ['text', ['label' => __('Costo del empaque (Q, 0 = gratis)')]], self::REGALO_COSTO)
+            ->addChildNode('tienda', 'tienda_contacto', __('Contacto'))
+            ->addSettingItem('tienda_contacto', ['text', ['label' => __('Número de WhatsApp con código de país (ej. 50255551234). Vacío = no se muestra')]], self::WHATSAPP)
+            ->addChildNode('tienda', 'tienda_garantia', __('Garantía'))
+            ->addSettingItem('tienda_garantia', ['text', ['label' => __('Texto corto de garantía (página del producto)')]], self::GARANTIA)
+            ->addSettingItem('tienda_garantia', ['text', ['label' => __('Políticas de garantía (se muestran al hacer clic)')]], self::POLITICAS);
     }
 
     /**

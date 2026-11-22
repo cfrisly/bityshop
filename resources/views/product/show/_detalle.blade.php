@@ -11,8 +11,10 @@
     $backorder = (float) ($product->backorder ?? 0) > 0;
     $available = $price > 0 && ($stock > 0 || $backorder);
     $maxQty = $backorder ? 10 : (int) max(1, min(10, $stock));
-    $garantia = setting(\App\Support\Ajustes::GARANTIA);
-    $politicas = setting(\App\Support\Ajustes::POLITICAS);
+    // Los textos por defecto también se traducen; si están vacíos no se muestran
+    $traducir = fn ($t) => trim((string) $t) === '' ? '' : __((string) $t);
+    $garantia = $traducir(setting(\App\Support\Ajustes::GARANTIA));
+    $politicas = $traducir(setting(\App\Support\Ajustes::POLITICAS));
     $url = route('product.show', $product->slug);
 
     // Descripción como lista: cada línea es un punto; lo que va antes de ":" se resalta
@@ -25,7 +27,7 @@
         }
         return e($linea);
     };
-    $entrega = fn ($s) => $s['desde'] === $s['hasta'] ? 'Llega el ' . $s['desde'] : 'Llega entre ' . $s['desde'] . ' y ' . $s['hasta'];
+    $entrega = fn ($s) => $s['desde'] === $s['hasta'] ? __('Llega el :fecha', ['fecha' => $s['desde']]) : __('Llega entre :desde y :hasta', ['desde' => $s['desde'], 'hasta' => $s['hasta']]);
 @endphp
 
 <style>
@@ -100,19 +102,19 @@
         {{-- ===== Galería ===== --}}
         <div class="col-lg-5">
             <div class="pd-gallery">
-                <div class="pd-thumbs" aria-label="Imágenes del producto">
+                <div class="pd-thumbs" aria-label="{{ __('Imágenes del producto') }}">
                     @foreach($images as $i => $img)
-                        <button type="button" class="pd-thumb {{ $i === 0 ? 'is-active' : '' }}" data-index="{{ $i }}" aria-label="Ver imagen {{ $i + 1 }}">
+                        <button type="button" class="pd-thumb {{ $i === 0 ? 'is-active' : '' }}" data-index="{{ $i }}" aria-label="{{ __('Ver imagen :n', ['n' => $i + 1]) }}">
                             <img src="{{ $img['thumb'] }}" alt="" loading="lazy">
                         </button>
                     @endforeach
                 </div>
-                <div class="pd-main" id="pd-main" role="button" tabindex="0" aria-label="Ampliar imagen">
+                <div class="pd-main" id="pd-main" role="button" tabindex="0" aria-label="{{ __('Ampliar imagen') }}">
                     <img id="pd-main-img" src="{{ $images[0]['medium'] }}" alt="{{ $product->name }}">
                     <span class="pd-lupa" aria-hidden="true">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/></svg>
                     </span>
-                    <span class="pd-hint">Clic para ampliar</span>
+                    <span class="pd-hint">{{ __('Clic para ampliar') }}</span>
                 </div>
             </div>
         </div>
@@ -123,36 +125,36 @@
             <div class="d-flex justify-content-between align-items-start gap-2">
                 <div>
                     @if($brand)
-                        <a class="pd-brand" href="{{ route('product.index', ['marca' => $brand->value]) }}">Visita la tienda de {{ $brand->title }}</a>
+                        <a class="pd-brand" href="{{ route('product.index', ['marca' => $brand->value]) }}">{{ __('Visita la tienda de :marca', ['marca' => $brand->title]) }}</a>
                     @endif
                 </div>
                 <div class="d-flex gap-2">
-                    <a class="pd-icon-btn" target="_blank" rel="noopener" title="Compartir por WhatsApp"
+                    <a class="pd-icon-btn" target="_blank" rel="noopener" title="{{ __('Compartir por WhatsApp') }}"
                        href="https://wa.me/?text={{ rawurlencode($product->name . ' ' . $url) }}">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.1 5.1 0 0 0 1.1 2.7 11.6 11.6 0 0 0 4.4 3.9c1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2s.2-1.1.1-1.2-.2-.2-.5-.3z"/></svg>
                     </a>
-                    <button type="button" class="pd-icon-btn" id="pd-share" title="Compartir" data-url="{{ $url }}" data-title="{{ $product->name }}">
+                    <button type="button" class="pd-icon-btn" id="pd-share" title="{{ __('Compartir') }}" data-url="{{ $url }}" data-title="{{ $product->name }}">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>
                     </button>
                 </div>
             </div>
             <hr>
 
-            <div class="{{ $available ? 'pd-ok' : 'pd-out' }}">{{ $available ? 'Disponible.' : 'Agotado por ahora.' }}</div>
+            <div class="{{ $available ? 'pd-ok' : 'pd-out' }}">{{ $available ? __('Disponible.') : __('Agotado por ahora.') }}</div>
             <div class="d-flex align-items-baseline gap-2 flex-wrap mt-1">
-                <span class="text-muted">Precio:</span>
+                <span class="text-muted">{{ __('Precio:') }}</span>
                 <x-precio :valor="$price" class="pd-price"/>
                 @if($onSale)
                     <span class="pd-old">Q{{ number_format($original, 2) }}</span>
-                    <span class="pd-save">Ahorras Q{{ number_format($original - $price, 2) }}</span>
+                    <span class="pd-save">{{ __('Ahorras :monto', ['monto' => 'Q' . number_format($original - $price, 2)]) }}</span>
                 @endif
             </div>
 
             @if($garantia)
                 <p class="mt-3 mb-2">
-                    <strong>Garantía:</strong> {{ $garantia }}
+                    <strong>{{ __('Garantía:') }}</strong> {{ $garantia }}
                     @if($politicas)
-                        <a href="#" data-bs-toggle="collapse" data-bs-target="#pd-politicas" title="Ver políticas">&#9432;</a>
+                        <a href="#" data-bs-toggle="collapse" data-bs-target="#pd-politicas" title="{{ __('Ver políticas') }}">&#9432;</a>
                     @endif
                 </p>
                 @if($politicas)
@@ -163,31 +165,31 @@
             <div class="mt-3 mb-2">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e8590c" stroke-width="2"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
                 @auth
-                    <a href="{{ route('home', ['section' => 'addresses']) }}" style="color:#e8590c; text-decoration: underline;">{{ $location ?? 'Agrega tu dirección para calcular el envío' }}</a>
+                    <a href="{{ route('home', ['section' => 'addresses']) }}" style="color:#e8590c; text-decoration: underline;">{{ $location ?? __('Agrega tu dirección para calcular el envío') }}</a>
                 @else
-                    <a href="{{ route('login') }}" style="color:#e8590c; text-decoration: underline;">Inicia sesión para calcular el envío a tu dirección</a>
+                    <a href="{{ route('login') }}" style="color:#e8590c; text-decoration: underline;">{{ __('Inicia sesión para calcular el envío a tu dirección') }}</a>
                 @endauth
             </div>
 
             <div class="pd-ship mb-3">
-                <div class="pd-ship-title">ENVÍO ESTÁNDAR</div>
+                <div class="pd-ship-title">{{ __('ENVÍO ESTÁNDAR') }}</div>
                 @if($shipping)
                     <div>
                         @if($shippingKnown)
                             {{ $shipping['desde'] ? $entrega($shipping) : '' }}
                             <div class="small text-muted">
-                                con {{ $shipping['courier'] ?? $shipping['nombre'] }} ·
-                                @if($shipping['costo'] > 0) <x-precio :valor="$shipping['costo']"/> @else <strong class="text-success">Envío GRATIS</strong> @endif
+                                {{ __('con') }} {{ $shipping['courier'] ?? $shipping['nombre'] }} ·
+                                @if($shipping['costo'] > 0) <x-precio :valor="$shipping['costo']"/> @else <strong class="text-success">{{ __('Envío GRATIS') }}</strong> @endif
                             </div>
                         @else
-                            @if($shipping['costo'] > 0) Desde <x-precio :valor="$shipping['costo']"/> @else <strong class="text-success">Envío GRATIS</strong> disponible @endif
-                            <div class="small text-muted">El costo y la fecha exactos dependen de tu departamento.</div>
+                            @if($shipping['costo'] > 0) {{ __('Desde') }} <x-precio :valor="$shipping['costo']"/> @else <strong class="text-success">{{ __('Envío GRATIS') }}</strong> {{ __('disponible') }} @endif
+                            <div class="small text-muted">{{ __('El costo y la fecha exactos dependen de tu departamento.') }}</div>
                         @endif
                     </div>
                 @elseif($shippingKnown)
-                    <div>Por ahora no tenemos envío a {{ $location }}.</div>
+                    <div>{{ __('Por ahora no tenemos envío a :lugar.', ['lugar' => $location]) }}</div>
                 @else
-                    <div class="small text-muted">El costo de envío se calcula en el checkout según tu departamento.</div>
+                    <div class="small text-muted">{{ __('El costo de envío se calcula en el checkout según tu departamento.') }}</div>
                 @endif
             </div>
 
@@ -210,7 +212,7 @@
                 </table>
             @endif
 
-            <p class="fst-italic small text-muted mt-3">* Precio y unidades sujetos a disponibilidad.</p>
+            <p class="fst-italic small text-muted mt-3">{{ __('* Precio y unidades sujetos a disponibilidad.') }}</p>
         </div>
 
         {{-- ===== Caja de compra ===== --}}
@@ -220,11 +222,11 @@
                 @if($onSale)
                     <div><span class="pd-old">Q{{ number_format($original, 2) }}</span> <span class="pd-save">-{{ round(($original - $price) / $original * 100) }}%</span></div>
                 @endif
-                <div class="{{ $available ? 'pd-ok' : 'pd-out' }}" style="font-size: 18px;">{{ $available ? 'Disponible.' : 'Agotado por ahora.' }}</div>
+                <div class="{{ $available ? 'pd-ok' : 'pd-out' }}" style="font-size: 18px;">{{ $available ? __('Disponible.') : __('Agotado por ahora.') }}</div>
 
                 @if($shipping && $shippingKnown && $shipping['desde'])
                     <div class="pd-ship my-3">
-                        <div class="pd-ship-title">ENVÍO ESTÁNDAR</div>
+                        <div class="pd-ship-title">{{ __('ENVÍO ESTÁNDAR') }}</div>
                         <div class="small">{{ $entrega($shipping) }}</div>
                     </div>
                 @endif
@@ -232,13 +234,13 @@
                 @if($garantia)
                     <div class="pd-warranty my-3">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
-                        <strong>Garantía:</strong> {{ $garantia }}
+                        <strong>{{ __('Garantía:') }}</strong> {{ $garantia }}
                     </div>
                 @endif
 
                 <form action="{{ route('cart.add', $product) }}" method="POST">
                     @csrf
-                    <label for="pd-qty" class="fw-bold mb-1">Cantidad:</label>
+                    <label for="pd-qty" class="fw-bold mb-1">{{ __('Cantidad:') }}</label>
                     <select id="pd-qty" name="qty" class="form-select mb-3" @disabled(!$available)>
                         @for($q = 1; $q <= $maxQty; $q++)
                             <option value="{{ $q }}">{{ $q }}</option>
@@ -249,60 +251,60 @@
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" name="regalo" value="1" id="pd-regalo">
                             <label class="form-check-label fw-bold" for="pd-regalo">
-                                Agregar empaque para regalo
+                                {{ __('Agregar empaque para regalo') }}
                                 <span class="fw-normal text-muted">({{ $giftCost > 0 ? 'Q' . number_format($giftCost, 2) : 'gratis' }})</span>
                             </label>
                         </div>
                     @endif
 
-                    <button type="submit" name="accion" value="carrito" class="pd-buy pd-buy-cart" @disabled(!$available)>Agregar al carrito</button>
-                    <button type="submit" name="accion" value="comprar" class="pd-buy pd-buy-now" @disabled(!$available)>Comprar</button>
+                    <button type="submit" name="accion" value="carrito" class="pd-buy pd-buy-cart" @disabled(!$available)>{{ __('Agregar al carrito') }}</button>
+                    <button type="submit" name="accion" value="comprar" class="pd-buy pd-buy-now" @disabled(!$available)>{{ __('Comprar') }}</button>
                 </form>
 
                 <div class="text-center mt-3">
                     @auth
                         <form action="{{ route('favorites.toggle', $product->id) }}" method="POST">
                             @csrf
-                            <button class="btn btn-outline-secondary btn-sm">{{ $isFavorite ? '♥ En tus favoritos' : '♡ Agregar a favoritos' }}</button>
+                            <button class="btn btn-outline-secondary btn-sm">{{ $isFavorite ? '♥ ' . __('En tus favoritos') : '♡ ' . __('Agregar a favoritos') }}</button>
                         </form>
                     @else
-                        <a class="btn btn-outline-secondary btn-sm" href="{{ route('login') }}">♡ Agregar a favoritos</a>
+                        <a class="btn btn-outline-secondary btn-sm" href="{{ route('login') }}">{{ __('♡ Agregar a favoritos') }}</a>
                     @endauth
                 </div>
             </div>
 
             <div class="pd-trust">
-                <div class="fw-bold">100% compra protegida.</div>
-                <div class="small" style="color:#e8590c; font-weight:600;">Productos originales | Pagos seguros</div>
+                <div class="fw-bold">{{ __('100% compra protegida.') }}</div>
+                <div class="small" style="color:#e8590c; font-weight:600;">{{ __('Productos originales | Pagos seguros') }}</div>
             </div>
         </div>
     </div>
 
     @if($whatsapp)
         <p class="mt-4">
-            <a href="https://wa.me/{{ $whatsapp }}?text={{ rawurlencode('Hola, quiero recibir ofertas y novedades de BityShop') }}" target="_blank" rel="noopener" class="fw-semibold" style="color:#0d47a1; text-decoration: underline;">
+            <a href="https://wa.me/{{ $whatsapp }}?text={{ rawurlencode(__('Hola, quiero recibir ofertas y novedades de :tienda', ['tienda' => config('app.name')])) }}" target="_blank" rel="noopener" class="fw-semibold" style="color:#0d47a1; text-decoration: underline;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="#25d366"><circle cx="12" cy="12" r="10"/></svg>
-                Recibe ofertas y novedades en WhatsApp
+                {{ __('Recibe ofertas y novedades en WhatsApp') }}
             </a>
         </p>
     @endif
 
     @if($similar->isNotEmpty())
-        <h2 class="h4 fw-bold mt-5 mb-3">Productos similares</h2>
+        <h2 class="h4 fw-bold mt-5 mb-3">{{ __('Productos similares') }}</h2>
         @include('product._grid', ['products' => $similar])
     @endif
 </div>
 
 {{-- Visor de imágenes ampliadas --}}
-<div class="pd-lb" id="pd-lb" role="dialog" aria-modal="true" aria-label="Imágenes ampliadas">
+<div class="pd-lb" id="pd-lb" role="dialog" aria-modal="true" aria-label="{{ __('Imágenes ampliadas') }}">
     <div class="pd-lb-top">
         <span id="pd-lb-count"></span>
-        <button type="button" class="pd-lb-close" id="pd-lb-close" aria-label="Cerrar">&times;</button>
+        <button type="button" class="pd-lb-close" id="pd-lb-close" aria-label="{{ __('Cerrar') }}">&times;</button>
     </div>
     <div class="pd-lb-stage">
-        <button type="button" class="pd-lb-btn pd-lb-prev" id="pd-lb-prev" aria-label="Anterior">&#8249;</button>
+        <button type="button" class="pd-lb-btn pd-lb-prev" id="pd-lb-prev" aria-label="{{ __('Anterior') }}">&#8249;</button>
         <img id="pd-lb-img" src="" alt="{{ $product->name }}">
-        <button type="button" class="pd-lb-btn pd-lb-next" id="pd-lb-next" aria-label="Siguiente">&#8250;</button>
+        <button type="button" class="pd-lb-btn pd-lb-next" id="pd-lb-next" aria-label="{{ __('Siguiente') }}">&#8250;</button>
     </div>
     <div class="pd-lb-thumbs" id="pd-lb-thumbs">
         @foreach($images as $i => $img)
@@ -387,7 +389,7 @@
         if (navigator.share) {
             navigator.share({ title: b.dataset.title, url: b.dataset.url }).catch(function () {});
         } else if (navigator.clipboard) {
-            navigator.clipboard.writeText(b.dataset.url).then(function () { b.title = 'Enlace copiado'; alert('Enlace copiado'); });
+            navigator.clipboard.writeText(b.dataset.url).then(function () { b.title = @json(__('Enlace copiado')); alert(@json(__('Enlace copiado'))); });
         }
     });
 })();

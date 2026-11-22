@@ -4,12 +4,12 @@
 --}}
 @if($shippingOptions->isNotEmpty())
 <div id="shipping-method" class="mb-4">
-    <h3>Envío</h3>
+    <h3>{{ __('Envío') }}</h3>
     <hr>
 
-    <p class="text-muted js-envio-sin-destino">Selecciona el departamento para ver las opciones de envío.</p>
+    <p class="text-muted js-envio-sin-destino">{{ __('Selecciona el departamento para ver las opciones de envío.') }}</p>
     <div class="alert alert-warning js-envio-sin-cobertura" style="display:none">
-        Por ahora no tenemos envío a ese destino. Escríbenos y te ayudamos a coordinarlo.
+        {{ __('Por ahora no tenemos envío a ese destino. Escríbenos y te ayudamos a coordinarlo.') }}
     </div>
 
     <div class="list-group mb-2">
@@ -23,11 +23,11 @@
                     <strong>{{ $op['courier'] ?? $op['nombre'] }}</strong>
                     @if($op['courier'] && $op['courier'] !== $op['nombre']) <span class="text-muted">· {{ $op['nombre'] }}</span> @endif
                     @if($op['desde'])
-                        <br><small class="text-muted">{{ $op['desde'] === $op['hasta'] ? 'Llega el ' . $op['desde'] : 'Llega entre ' . $op['desde'] . ' y ' . $op['hasta'] }}</small>
+                        <br><small class="text-muted">{{ $op['desde'] === $op['hasta'] ? __('Llega el :fecha', ['fecha' => $op['desde']]) : __('Llega entre :desde y :hasta', ['desde' => $op['desde'], 'hasta' => $op['hasta']]) }}</small>
                     @endif
                 </span>
                 <span class="fw-bold text-nowrap">
-                    @if($op['costo'] > 0) {{ format_price($op['costo']) }} @else <span class="text-success">Gratis</span> @endif
+                    @if($op['costo'] > 0) {{ format_price($op['costo']) }} @else <span class="text-success">{{ __('Gratis') }}</span> @endif
                 </span>
               </span>
             </label>
@@ -83,7 +83,7 @@
             if (!linea || !total) { return; }
             var costo = elegido ? parseFloat(elegido.closest('.js-envio-opcion').dataset.costo) : null;
             var fmt = function (v) { return 'Q' + v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}); };
-            linea.textContent = costo === null ? 'Elige una opción' : (costo > 0 ? fmt(costo) : 'Gratis');
+            linea.textContent = costo === null ? @json(__('Elige una opción')) : (costo > 0 ? fmt(costo) : @json(__('Gratis')));
             total.textContent = fmt(parseFloat(total.dataset.base) + (costo || 0));
         }
 

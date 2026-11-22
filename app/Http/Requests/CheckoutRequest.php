@@ -44,9 +44,9 @@ class CheckoutRequest extends FormRequest
     public function messages()
     {
         return [
-            'billpayer.address.province_id.required_if' => 'Selecciona el departamento.',
-            'shippingAddress.province_id.required' => 'Selecciona el departamento de envío.',
-            'shipping_method_id.required' => 'Elige una opción de envío.',
+            'billpayer.address.province_id.required_if' => __('Selecciona el departamento.'),
+            'shippingAddress.province_id.required' => __('Selecciona el departamento de envío.'),
+            'shipping_method_id.required' => __('Elige una opción de envío.'),
         ];
     }
 
@@ -60,7 +60,7 @@ class CheckoutRequest extends FormRequest
                 }
                 [$country, $province] = $this->destination();
                 if (!Envio::llegaA($this->input('shipping_method_id'), $country, $province)) {
-                    $validator->errors()->add('shipping_method_id', 'Esa opción de envío no llega al departamento elegido.');
+                    $validator->errors()->add('shipping_method_id', __('Esa opción de envío no llega al departamento elegido.'));
                 }
             },
         ];

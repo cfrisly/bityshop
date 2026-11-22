@@ -38,7 +38,7 @@ class CheckoutController extends Controller
     public function show()
     {
         if ($cambiados = Carrito::actualizarPrecios()) {
-            flash()->info('Actualizamos el precio de: ' . implode(', ', $cambiados) . '.');
+            flash()->info(__('Actualizamos el precio de: :productos.', ['productos' => implode(', ', $cambiados)]));
         }
 
         $checkout = false;

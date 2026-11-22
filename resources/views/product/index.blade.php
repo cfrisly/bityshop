@@ -2,7 +2,7 @@
 
 @section('categories-menu')
     <nav class="navbar navbar-expand-lg navbar-light rounded-3 px-2 mb-2" style="background:#e3f4f5;">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#categoriesMenu" aria-controls="categoriesMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#categoriesMenu" aria-controls="categoriesMenu" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="categoriesMenu">
@@ -24,7 +24,7 @@
 @stop
 
 @section('breadcrumbs')
-    <li class="breadcrumb-item"><a href="{{ route('product.index') }}">Todos los productos</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('product.index') }}">{{ __('Todos los productos') }}</a></li>
     @isset($heading)<li class="breadcrumb-item active">{{ $heading }}</li>@endisset
     @if($taxon)
         @include('product._breadcrumbs')
@@ -48,7 +48,7 @@
             <div class="col-md-9">
                 @if($taxon && $products->isEmpty() && $taxon->children->count())
                     <div class="card card-default mb-4">
-                        <div class="card-header">{{ $taxon->name }} Subcategories</div>
+                        <div class="card-header">{{ $taxon->name }} {{ __('Subcategories') }}</div>
 
                         <div class="card-body">
                             <div class="row">
@@ -67,18 +67,18 @@
                     <div class="alert alert-info">
                         {{ $emptyMessage }}
                         @if(!empty($suggestion))
-                            <div class="mt-2 fs-5">¿Quisiste decir
+                            <div class="mt-2 fs-5">{{ __('¿Quisiste decir') }}
                                 <a href="{{ route('product.search', ['q' => $suggestion]) }}" class="fw-bold">{{ $suggestion }}</a>?
                             </div>
                         @endif
                     </div>
-                    <a href="{{ route('product.index') }}" class="btn btn-outline-secondary btn-sm">Ver todos los productos</a>
-                    <a href="{{ route('product.ofertas') }}" class="btn btn-outline-secondary btn-sm">Ver ofertas</a>
+                    <a href="{{ route('product.index') }}" class="btn btn-outline-secondary btn-sm">{{ __('Ver todos los productos') }}</a>
+                    <a href="{{ route('product.ofertas') }}" class="btn btn-outline-secondary btn-sm">{{ __('Ver ofertas') }}</a>
                 @endif
 
                 @if(!$products->isEmpty())
                 <div class="card card-default">
-                    <div class="card-header">{{ $heading ?? ($taxon ? 'Productos en ' . $taxon->name : 'Todos los productos') }}</div>
+                    <div class="card-header">{{ $heading ?? ($taxon ? __('Productos en :categoria', ['categoria' => $taxon->name]) : __('Todos los productos')) }}</div>
 
                     <div class="card-body">
                         @include('product._grid', ['products' => $products])

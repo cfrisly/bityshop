@@ -2,7 +2,7 @@
 
 @section('breadcrumbs')
     <li class="breadcrumb-item"><a href="{{ route('product.index') }}">{{ __('All Products') }}</a></li>
-    <li class="breadcrumb-item">Carrito</li>
+    <li class="breadcrumb-item">{{ __('Carrito') }}</li>
 @stop
 
 @section('content')
@@ -63,9 +63,9 @@
 <div class="container ct py-3">
     @if(Cart::isEmpty())
         <div class="ct-card p-5 text-center">
-            <h1 class="ct-title mb-2">Tu carrito está vacío</h1>
-            <p class="text-muted mb-4">Explora el catálogo y agrega lo que te guste.</p>
-            <a href="{{ route('product.index') }}" class="ct-pay d-inline-flex" style="max-width: 280px;">Ver productos</a>
+            <h1 class="ct-title mb-2">{{ __('Tu carrito está vacío') }}</h1>
+            <p class="text-muted mb-4">{{ __('Explora el catálogo y agrega lo que te guste.') }}</p>
+            <a href="{{ route('product.index') }}" class="ct-pay d-inline-flex" style="max-width: 280px;">{{ __('Ver productos') }}</a>
         </div>
     @else
     @php $itemCount = (int) Cart::getItems()->sum('quantity'); @endphp
@@ -73,7 +73,7 @@
         {{-- Columna izquierda: productos --}}
         <div class="col-lg-8">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <h1 class="ct-title">Carrito <span class="ct-count">({{ $itemCount }} {{ $itemCount === 1 ? 'producto' : 'productos' }})</span></h1>
+                <h1 class="ct-title">{{ __('Carrito') }} <span class="ct-count">({{ $itemCount }} {{ $itemCount === 1 ? __('producto') : __('productos') }})</span></h1>
                 <a href="{{ auth()->check() ? route('home', ['section' => 'addresses']) : route('login') }}">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
                     {{ $location }} &#9662;
@@ -86,30 +86,30 @@
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h11v9H3zM14 9h4l3 3v3h-7z"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
                     <div>
                         @if($shipping)
-                            <strong>Envío
-                                @if($shipping['costo'] > 0) <x-precio :valor="$shipping['costo']"/> @else <span class="text-success">gratis</span> @endif
+                            <strong>{{ __('Envío') }}
+                                @if($shipping['costo'] > 0) <x-precio :valor="$shipping['costo']"/> @else <span class="text-success">{{ __('gratis') }}</span> @endif
                             </strong>
-                            con {{ $shipping['courier'] ?? $shipping['nombre'] }}
-                            @if($shipping['desde']) · {{ $shipping['desde'] === $shipping['hasta'] ? 'recibe el ' . $shipping['desde'] : 'recibe entre ' . $shipping['desde'] . ' y ' . $shipping['hasta'] }} @endif
+                            {{ __('con') }} {{ $shipping['courier'] ?? $shipping['nombre'] }}
+                            @if($shipping['desde']) · {{ $shipping['desde'] === $shipping['hasta'] ? __('recibe el :fecha', ['fecha' => $shipping['desde']]) : __('recibe entre :desde y :hasta', ['desde' => $shipping['desde'], 'hasta' => $shipping['hasta']]) }} @endif
                             en {{ $location }}
                         @elseif($noCoverage)
-                            <strong>Aún no tenemos envío a {{ $location }}.</strong> Puedes elegir otra dirección en el checkout.
+                            <strong>{{ __('Aún no tenemos envío a') }} {{ $location }}.</strong> {{ __('Puedes elegir otra dirección en el checkout.') }}
                         @else
                             <strong>
-                                @if($shippingFrom === null) Envío
-                                @elseif($shippingFrom <= 0) Envío <span class="text-success">gratis</span> disponible
-                                @else Envío desde <x-precio :valor="$shippingFrom"/>
+                                @if($shippingFrom === null) {{ __('Envío') }}
+                                @elseif($shippingFrom <= 0) {{ __('Envío') }} <span class="text-success">{{ __('gratis') }}</span> {{ __('disponible') }}
+                                @else {{ __('Envío desde') }} <x-precio :valor="$shippingFrom"/>
                                 @endif
                             </strong>
-                            · el costo exacto depende de tu departamento y se calcula en el checkout
+                            {{ __('· el costo exacto depende de tu departamento y se calcula en el checkout') }}
                         @endif
-                        <a href="{{ auth()->check() ? route('home', ['section' => 'addresses']) : route('login') }}">{{ auth()->check() ? 'Cambiar' : 'Inicia sesión' }}</a>
+                        <a href="{{ auth()->check() ? route('home', ['section' => 'addresses']) : route('login') }}">{{ auth()->check() ? __('Cambiar') : __('Inicia sesión') }}</a>
                     </div>
                 </div>
                 @if($pickupPlace)
                 <div class="ct-info">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10v10h16V10M3 10l2-6h14l2 6zM9 20v-5h6v5"/></svg>
-                    <div><strong>Recoge gratis en {{ $pickupPlace }}</strong> · {{ $pickupDate }} {{ $pickupHours }}</div>
+                    <div><strong>{{ __('Recoge gratis en') }} {{ $pickupPlace }}</strong> · {{ $pickupDate }} {{ $pickupHours }}</div>
                 </div>
                 @endif
             </div>
@@ -140,22 +140,22 @@
                                 </div>
                             </div>
                             @if($enOferta)
-                                <div class="ct-save">Ahorras Q{{ number_format(($antes - $item->price) * $item->quantity, 2) }}</div>
+                                <div class="ct-save">{{ __('Ahorras Q') }}{{ number_format(($antes - $item->price) * $item->quantity, 2) }}</div>
                             @endif
                             @if($inStock)
-                                <div class="ct-ok">Disponible</div>
+                                <div class="ct-ok">{{ __('Disponible') }}</div>
                             @else
                                 <div class="ct-warn">
-                                    @if((int) $stock === 1) Solo queda 1 unidad
-                                    @elseif($stock > 1) Solo quedan {{ (int) $stock }} unidades
-                                    @else Sin existencias por ahora
+                                    @if((int) $stock === 1) {{ __('Solo queda 1 unidad') }}
+                                    @elseif($stock > 1) {{ __('Solo quedan :n unidades', ['n' => (int) $stock]) }}
+                                    @else {{ __('Sin existencias por ahora') }}
                                     @endif
                                 </div>
                             @endif
                             <div class="ct-eta">
-                                <strong class="text-success">{{ $item->quantity }} {{ $item->quantity == 1 ? 'unidad' : 'unidades' }}</strong>
+                                <strong class="text-success">{{ $item->quantity }} {{ $item->quantity == 1 ? __('unidad') : __('unidades') }}</strong>
                                 @if($shipping && $shipping['desde'])
-                                    {{ $item->quantity == 1 ? 'llega' : 'llegan' }} {{ $shipping['desde'] === $shipping['hasta'] ? 'el ' . $shipping['desde'] : 'entre ' . $shipping['desde'] . ' y ' . $shipping['hasta'] }}
+                                    {{ $shipping['desde'] === $shipping['hasta'] ? trans_choice('{1} llega el :fecha|[2,*] llegan el :fecha', $item->quantity, ['fecha' => $shipping['desde']]) : trans_choice('{1} llega entre :desde y :hasta|[2,*] llegan entre :desde y :hasta', $item->quantity, ['desde' => $shipping['desde'], 'hasta' => $shipping['hasta']]) }}
                                 @endif
                                 @if($item->quantity > 1)
                                     <span class="text-muted">· <x-precio :valor="$item->price"/> c/u</span>
@@ -166,7 +166,7 @@
                                 <form action="{{ route('cart.update', $item) }}" method="POST">
                                     @csrf
                                     <span class="ct-qty">
-                                        <button type="submit" name="qty" value="{{ $item->quantity - 1 }}" aria-label="{{ $item->quantity <= 1 ? 'Eliminar' : 'Quitar uno' }}" dusk="cart-minus-{{ $buyable->id }}">
+                                        <button type="submit" name="qty" value="{{ $item->quantity - 1 }}" aria-label="{{ $item->quantity <= 1 ? __('Eliminar') : __('Quitar uno') }}" dusk="cart-minus-{{ $buyable->id }}">
                                             @if($item->quantity <= 1)
                                                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
                                             @else
@@ -174,7 +174,7 @@
                                             @endif
                                         </button>
                                         <span>{{ $item->quantity }}</span>
-                                        <button type="submit" name="qty" value="{{ $item->quantity + 1 }}" aria-label="Agregar uno">
+                                        <button type="submit" name="qty" value="{{ $item->quantity + 1 }}" aria-label="{{ __('Agregar uno') }}">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
                                         </button>
                                     </span>
@@ -182,7 +182,7 @@
 
                                 <form action="{{ route('cart.remove', $item) }}" method="POST">
                                     @csrf
-                                    <button class="ct-link" dusk="cart-delete-{{ $buyable->id }}">Eliminar</button>
+                                    <button class="ct-link" dusk="cart-delete-{{ $buyable->id }}">{{ __('Eliminar') }}</button>
                                 </form>
 
                                 @if($buyable instanceof \Vanilo\Product\Contracts\Product)
@@ -190,10 +190,10 @@
                                     @auth
                                         <form action="{{ route('cart.favorite', $item) }}" method="POST">
                                             @csrf
-                                            <button class="ct-link">&#9825; Mover a favoritos</button>
+                                            <button class="ct-link">&#9825; {{ __('Mover a favoritos') }}</button>
                                         </form>
                                     @else
-                                        <a href="{{ route('login') }}">&#9825; Mover a favoritos</a>
+                                        <a href="{{ route('login') }}">&#9825; {{ __('Mover a favoritos') }}</a>
                                     @endauth
                                 @endif
                             </div>
@@ -202,7 +202,7 @@
                 @endforeach
 
                 <div class="ct-foot">
-                    Subtotal ({{ $itemCount }} {{ $itemCount === 1 ? 'producto' : 'productos' }}): <strong><x-precio :valor="$subtotal"/></strong>
+                    {{ __('Subtotal') }} ({{ $itemCount }} {{ $itemCount === 1 ? __('producto') : __('productos') }}): <strong><x-precio :valor="$subtotal"/></strong>
                 </div>
             </div>
         </div>
@@ -213,9 +213,9 @@
                 @if($missingForFree !== null)
                     <div class="text-center">
                         @if($missingForFree > 0)
-                            Agrega <strong><x-precio :valor="$missingForFree"/></strong> más para <strong class="text-success">envío gratis</strong>
+                            {{ __('Agrega') }} <strong><x-precio :valor="$missingForFree"/></strong> {{ __('más para') }} <strong class="text-success">{{ __('envío gratis') }}</strong>
                         @else
-                            <strong class="text-success">¡Tienes envío gratis!</strong>
+                            <strong class="text-success">{{ __('¡Tienes envío gratis!') }}</strong>
                         @endif
                     </div>
                     <div class="ct-bar"><div style="width: {{ min(100, round($itemsTotal / $freeFrom * 100)) }}%"></div></div>
@@ -225,13 +225,13 @@
                 <details class="ct-coupon" @if(session('cupon_error')) open @endif>
                     <summary>
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4z"/><path d="M14 7v10" stroke-dasharray="2 2"/></svg>
-                        <span class="flex-grow-1">Aplicar cupón</span>
+                        <span class="flex-grow-1">{{ __('Aplicar cupón') }}</span>
                         <span>&rarr;</span>
                     </summary>
                     <form action="{{ route('cart.coupon.apply') }}" method="POST" class="d-flex gap-2 mt-3">
                         @csrf
-                        <input type="text" name="cupon" class="form-control" placeholder="Código del cupón" required maxlength="50">
-                        <button class="btn btn-outline-primary">Aplicar</button>
+                        <input type="text" name="cupon" class="form-control" placeholder="{{ __('Código del cupón') }}" required maxlength="50">
+                        <button class="btn btn-outline-primary">{{ __('Aplicar') }}</button>
                     </form>
                     @if(session('cupon_error'))
                         <div class="text-danger small mt-2">{{ session('cupon_error') }}</div>
@@ -243,19 +243,19 @@
                         @csrf
                         <input type="hidden" name="regalo" value="0">
                         <input type="checkbox" class="form-check-input m-0" id="ct-regalo" name="regalo" value="1" @checked($gift) onchange="this.form.submit()">
-                        <label for="ct-regalo" class="flex-grow-1 m-0" style="cursor:pointer; font-weight:600;">Agregar empaque para regalo</label>
-                        <span class="text-muted small">@if($giftCost > 0) <x-precio :valor="$giftCost"/> @else gratis @endif</span>
+                        <label for="ct-regalo" class="flex-grow-1 m-0" style="cursor:pointer; font-weight:600;">{{ __('Agregar empaque para regalo') }}</label>
+                        <span class="text-muted small">@if($giftCost > 0) <x-precio :valor="$giftCost"/> @else {{ __('gratis') }} @endif</span>
                     </form>
                 @endif
 
-                <div class="ct-row"><span>Subtotal productos</span><x-precio :valor="$subtotal"/></div>
+                <div class="ct-row"><span>{{ __('Subtotal productos') }}</span><x-precio :valor="$subtotal"/></div>
                 @if($discount < 0)
                     <div class="ct-row text-success">
-                        <span>Descuento
+                        <span>{{ __('Descuento') }}
                             @foreach($coupons as $code)
                                 <form action="{{ route('cart.coupon.remove', $code) }}" method="POST" class="d-inline">
                                     @csrf
-                                    <button class="badge bg-success-subtle text-success border-0" title="Quitar cupón">{{ $code }} &times;</button>
+                                    <button class="badge bg-success-subtle text-success border-0" title="{{ __('Quitar cupón') }}">{{ $code }} &times;</button>
                                 </form>
                             @endforeach
                         </span>
@@ -263,35 +263,35 @@
                     </div>
                 @elseif(count($coupons))
                     <div class="ct-row small text-muted">
-                        <span>Cupón
+                        <span>{{ __('Cupón') }}
                             @foreach($coupons as $code)
                                 <form action="{{ route('cart.coupon.remove', $code) }}" method="POST" class="d-inline">
                                     @csrf
-                                    <button class="badge bg-secondary-subtle text-secondary border-0" title="Quitar cupón">{{ $code }} &times;</button>
+                                    <button class="badge bg-secondary-subtle text-secondary border-0" title="{{ __('Quitar cupón') }}">{{ $code }} &times;</button>
                                 </form>
                             @endforeach
                         </span>
-                        <span>sin descuento aún</span>
+                        <span>{{ __('sin descuento aún') }}</span>
                     </div>
                 @endif
                 @if($gift)
-                    <div class="ct-row"><span>Empaque para regalo</span>@if($giftCost > 0) <x-precio :valor="$giftCost"/> @else <span class="text-success">Gratis</span> @endif</div>
+                    <div class="ct-row"><span>{{ __('Empaque para regalo') }}</span>@if($giftCost > 0) <x-precio :valor="$giftCost"/> @else <span class="text-success">{{ __('Gratis') }}</span> @endif</div>
                 @endif
                 <div class="ct-row text-muted">
-                    <span>Envío</span>
-                    @if(!$shipping) <span>Se calcula en el checkout</span>
+                    <span>{{ __('Envío') }}</span>
+                    @if(!$shipping) <span>{{ __('Se calcula en el checkout') }}</span>
                     @elseif($shipping['costo'] > 0) <x-precio :valor="$shipping['costo']"/>
-                    @else <span class="text-success">Gratis</span> @endif
+                    @else <span class="text-success">{{ __('Gratis') }}</span> @endif
                 </div>
-                <div class="ct-total"><span>Total</span><x-precio :valor="$subtotal + $discount + ($gift ? $giftCost : 0) + ($shipping['costo'] ?? 0)"/></div>
+                <div class="ct-total"><span>{{ __('Total') }}</span><x-precio :valor="$subtotal + $discount + ($gift ? $giftCost : 0) + ($shipping['costo'] ?? 0)"/></div>
 
                 <a href="{{ route('checkout.show') }}" class="ct-pay">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-                    Proceder al pago
+                    {{ __('Proceder al pago') }}
                 </a>
                 <a href="{{ route('product.index') }}" class="ct-more">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-                    Seguir comprando
+                    {{ __('Seguir comprando') }}
                 </a>
             </div>
         </div>

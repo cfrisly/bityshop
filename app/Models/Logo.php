@@ -52,15 +52,17 @@ class Logo extends Model
     public function periodo(): string
     {
         if ($this->es_principal) {
-            return 'Todo el año (principal)';
+            return __('Todo el año (principal)');
         }
         if (!$this->desde || !$this->hasta) {
-            return 'Sin fechas';
+            return __('Sin fechas');
         }
-        $formato = $this->cada_anio ? 'j \d\e F' : 'j \d\e F \d\e Y';
-        $texto = $this->desde->locale('es')->translatedFormat($formato) . ' al ' . $this->hasta->locale('es')->translatedFormat($formato);
+        $es = app()->getLocale() === 'es';
+        $formato = $this->cada_anio ? ($es ? 'j \d\e F' : 'F j') : ($es ? 'j \d\e F \d\e Y' : 'F j, Y');
+        $fecha = fn ($d) => $d->locale(app()->getLocale())->translatedFormat($formato);
+        $texto = __(':desde al :hasta', ['desde' => $fecha($this->desde), 'hasta' => $fecha($this->hasta)]);
 
-        return $this->cada_anio ? $texto . ' (cada año)' : $texto;
+        return $this->cada_anio ? __(':periodo (cada año)', ['periodo' => $texto]) : $texto;
     }
 
     /**

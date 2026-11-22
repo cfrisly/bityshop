@@ -54,7 +54,7 @@ class ProductController extends Controller
             ->orderByRaw('(original_price - price) / original_price DESC')
             ->get();
 
-        return $this->listado($products, 'Ofertas', 'Por ahora no hay productos en oferta. ¡Vuelve pronto!');
+        return $this->listado($products, __('Ofertas'), __('Por ahora no hay productos en oferta. ¡Vuelve pronto!'));
     }
 
     /** Lo + nuevo: los productos agregados más recientemente */
@@ -62,7 +62,7 @@ class ProductController extends Controller
     {
         $products = ProductProxy::actives()->latest('created_at')->latest('id')->limit(24)->get();
 
-        return $this->listado($products, 'Lo + nuevo', 'Todavía no hay productos nuevos.');
+        return $this->listado($products, __('Lo + nuevo'), __('Todavía no hay productos nuevos.'));
     }
 
     private function listado($products, string $heading, string $empty)
@@ -216,8 +216,8 @@ class ProductController extends Controller
             'taxon' => null,
             'properties' => PropertyProxy::get(),
             'filters' => [],
-            'heading' => 'Resultados para “' . $q . '” (' . $products->count() . ')',
-            'emptyMessage' => 'No encontramos productos para “' . $q . '”. Revisa cómo está escrito o prueba con otra palabra.',
+            'heading' => __('Resultados para “:q” (:n)', ['q' => $q, 'n' => $products->count()]),
+            'emptyMessage' => __('No encontramos productos para “:q”. Revisa cómo está escrito o prueba con otra palabra.', ['q' => $q]),
             'suggestion' => $suggestion,
         ]);
     }

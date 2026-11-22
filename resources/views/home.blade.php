@@ -23,7 +23,7 @@
                             {{-- Boton editar --}}
                             <a href="{{ route('home', ['section' => 'profile', 'edit'=> 1]) }}" 
                             class="profile-edit-button"
-                            title="Editar mi perfil">
+                            title="{{ __('Editar mi perfil') }}">
                                 ✎
                             </a>
                         </div>
@@ -31,12 +31,12 @@
                         {{-- Información --}}
                         <div class="profile-info">
                             <div class="profile-greeting">
-                                ¡Hola {{ Auth::user()->name }}!
+                                {{ __('¡Hola') }} {{ Auth::user()->name }}!
                             </div>
 
                             <a href="{{ route('home', ['section' => 'profile', 'edit'=> 1]) }}"
                             class="profile-edit-link">
-                                Editar mi perfil
+                                {{ __('Editar mi perfil') }}
                                 <span>→</span>
                             </a>
                         </div>
@@ -50,7 +50,7 @@
                         <li class="list-group-item">
                             <a href="{{ route('home', ['section' => 'profile']) }}"
                                class="text-decoration-none">
-                                👤 Perfil
+                                {{ __('👤 Perfil') }}
                             </a>
                         </li>
 
@@ -58,7 +58,7 @@
                         <li class="list-group-item">
                             <a href="{{ route('home', ['section' => 'favorites']) }}"
                                class="text-decoration-none">
-                                ❤️ Favoritos
+                                {{ __('❤️ Favoritos') }}
                             </a>
                         </li>
 
@@ -66,7 +66,7 @@
                         <li class="list-group-item">
                             <a href="{{ route('home', ['section' => 'orders']) }}"
                                class="text-decoration-none">
-                                📦 Mis pedidos
+                                {{ __('📦 Mis pedidos') }}
                             </a>
                         </li>
 
@@ -74,7 +74,7 @@
                         <li class="list-group-item">
                             <a href="{{ route('home', ['section' => 'addresses']) }}"
                                class="text-decoration-none">
-                                📍 Direcciones guardadas
+                                {{ __('📍 Direcciones guardadas') }}
                             </a>
                         </li>
 
@@ -82,7 +82,7 @@
                         <li class="list-group-item">
                             <a href="{{ route('home', ['section' => 'cards']) }}"
                                class="text-decoration-none">
-                                💳 Tarjetas guardadas
+                                {{ __('💳 Tarjetas guardadas') }}
                             </a>
                         </li>
 
@@ -131,12 +131,12 @@
                 <div class="card">
 
                     <div class="card-header d-flex justify-content-between align-item-center">
-                        <h5 class="mb-0">Mi Perfil</h5>
+                        <h5 class="mb-0">{{ __('Mi Perfil') }}</h5>
 
                         @if (! $editing)
                             <a href="{{ route('home', ['section' => 'profile', 'edit' => 1]) }}"
                                 class="btn btn-sm btn-outline-danger">
-                                ✎ Editar
+                                {{ __('✎ Editar') }}
                             </a>
                         @endif
 
@@ -160,8 +160,8 @@
 
                         @if (! $customer && ! $editing)
                             <div class="alert alert-warning">
-                                Tu perfil aún no tiene datos de cliente completos.
-                                <a href="{{ route('home', ['section' => 'profile', 'edit' => 1]) }}">Complétalos aquí</a>.
+                                {{ __('Tu perfil aún no tiene datos de cliente completos.') }}
+                                <a href="{{ route('home', ['section' => 'profile', 'edit' => 1]) }}">{{ __('Complétalos aquí') }}</a>.
                             </div>
                         @endif
 
@@ -173,7 +173,7 @@
 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label for="name" class="fw-bold">Nombre</label>
+                                        <label for="name" class="fw-bold">{{ __('Nombre') }}</label>
                                         <input type="text" id="name" name="firstname"
                                             class="form-control @error('name') is-invalid @enderror"
                                             value="{{ old('firstname', $firstname) }}" required
@@ -181,7 +181,7 @@
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label for="name" class="fw-bold">Apellido</label>
+                                        <label for="name" class="fw-bold">{{ __('Apellido') }}</label>
                                         <input type="text" id="name" name="lastname"
                                             class="form-control @error('lastname') is-invalid @enderror"
                                             value="{{ old('lastname', $lastname) }}" required
@@ -189,20 +189,20 @@
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label for="email" class="fw-bold">Correo electronico</label>
+                                        <label for="email" class="fw-bold">{{ __('Correo electronico') }}</label>
                                         <input type="email" id="email" name="email" 
                                             class="form-control @error('email') is-invalid @enderror"
                                             value="{{ old('email', $user->email) }}" required>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label for="phone" class="fw-bold">Teléfono</label>
+                                        <label for="phone" class="fw-bold">{{ __('Teléfono') }}</label>
                                         <input type="text" id="phone" name="phone" class="form-control"
                                             value="{{ old('phone', $phone) }}">
                                     </div>
 
                                     <div class="col-md-4 md-3">
-                                        <label for="type" class="fw-bold">Tipo de cliente</label>
+                                        <label for="type" class="fw-bold">{{ __('Tipo de cliente') }}</label>
                                         @php $selectdType = old('type', $type); @endphp
                                         <select name="type" id="type" class="form-select form-control">
                                             @foreach ($typeLabels as $value => $label)
@@ -214,9 +214,9 @@
                                     </div>
 
                                     <div class="col-md-4 mb-3">
-                                        <label for="company_name" class="fw-bold">Empresa</label>
+                                        <label for="company_name" class="fw-bold">{{ __('Empresa') }}</label>
                                         <input type="text" id="company_name" name="company_name" class="form-control"
-                                            placeholder="Solo si eres empresa"
+                                            placeholder="{{ __('Solo si eres empresa') }}"
                                             value="{{ old('company_name', $companyName) }}">
                                     </div>
 
@@ -228,17 +228,17 @@
 
                                     <hr>
 
-                                    <h6 class="text-muted mb-3">Direccion</h6>
+                                    <h6 class="text-muted mb-3">{{ __('Direccion') }}</h6>
                                     <div class="row">
                                         <div class="col-md-8 mb-3">
-                                            <label for="address" class="fw-bold">Direccion</label>
+                                            <label for="address" class="fw-bold">{{ __('Direccion') }}</label>
                                             <input type="text" id="address" name="address" class="form-control"
-                                                placeholder="Calle, avenida, numero de casa"
+                                                placeholder="{{ __('Calle, avenida, numero de casa') }}"
                                                 value="{{ old('address', $address->address ?? '') }}">
                                         </div>
 
                                         <div class="col-md-4 mb-3">
-                                            <label for="address2" class="fw-bold">Zona / Referencia</label>
+                                            <label for="address2" class="fw-bold">{{ __('Zona / Referencia') }}</label>
                                             <input type="text" id="address2" name="address2" class="form-control"
                                                 value="{{ old('address2', $address->address2 ?? '') }}">
                                         </div>
@@ -246,21 +246,21 @@
                                         <x-departamento class="col-md-4 mb-3" name="province_id" :value="$address->province_id ?? null" country-select="country_id" :required="false"/>
 
                                         <div class="col-md-4 mb-3">
-                                            <label for="city" class="fw-bold">Ciudad / Municipio</label>
+                                            <label for="city" class="fw-bold">{{ __('Ciudad / Municipio') }}</label>
                                             <input type="text" id="city" name="city" class="form-control"
                                                 value="{{ old('city', $address->city ?? '') }}">
                                         </div>
 
                                         <div class="col-md-4 mb-3">
-                                            <label for="postalcode" class="fw-bold">Código postal</label>
+                                            <label for="postalcode" class="fw-bold">{{ __('Código postal') }}</label>
                                             <input type="text" id="postalcode" name="postalcode" class="form-control"
                                                 value="{{ old('postalcode', $address->postalcode ?? '') }}">
                                         </div>
 
                                         <div class="col-md-4 mb-3">
-                                            <label for="country_id" class="fw-bold">País</label>
+                                            <label for="country_id" class="fw-bold">{{ __('País') }}</label>
                                             <select id="country_id" name="country_id" class="form-select form-control">
-                                                <option value="">Selecciona un país</option>
+                                                <option value="">{{ __('Selecciona un país') }}</option>
                                                 @foreach ($countries as $country)
                                                     <option value="{{ $country->id }}"
                                                         {{ old('country_id', $address->country_id ?? 'GT') == $country->id ? 'selected' : '' }}>
@@ -277,10 +277,10 @@
                                 <div class="d-flex justify-content-end gap-2">
                                     <a href="{{ route('home', ['section' => 'profile']) }}"
                                     class="bt btn-secondary">
-                                        Cancelar
+                                        {{ __('Cancelar') }}
                                     </a>
                                     <button type="submit" class="btn btn-danger">
-                                        Actualizar
+                                        {{ __('Actualizar') }}
                                     </button>
                                 </div>
                             </form>
@@ -288,37 +288,37 @@
                             {{--Modo_Lectura--}}
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="fw-bold">Nombre</label>
+                                    <label class="fw-bold">{{ __('Nombre') }}</label>
                                     <div class="form-control bg-light">{{ $firstname ?: '-' }}</div>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label class="fw-bold">Apellido</label>
+                                    <label class="fw-bold">{{ __('Apellido') }}</label>
                                     <div class="form-control bg-light">{{ $lastname ?: '-' }}</div>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label class="fw-bold">Correo electronico</label>
+                                    <label class="fw-bold">{{ __('Correo electronico') }}</label>
                                     <div class="form-control bg-light">{{ $user->email }}</div>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label class="fw-bold">Usuario</label>
+                                    <label class="fw-bold">{{ __('Usuario') }}</label>
                                     <div class="form-control bg-light">{{ $user->email }}</div>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label class="fw-bold">Teléfono</label>
+                                    <label class="fw-bold">{{ __('Teléfono') }}</label>
                                     <div class="form-control bg-light">{{ $phone ?: '-' }}</div>
                                 </div>
 
                                 <div class="col-md-4 mb-3">
-                                    <label class="fw-bold">Tipo de cliente</label>
+                                    <label class="fw-bold">{{ __('Tipo de cliente') }}</label>
                                     <div class="form-control bg-light">{{ $typeLabels[$type] ?? $type }}</div>
                                 </div>
 
                                 <div class="col-md-4 mb-3">
-                                    <label class="fw-bold">Empresa</label>
+                                    <label class="fw-bold">{{ __('Empresa') }}</label>
                                     <div class="form-control bg-light">{{ $companyName ?: '—' }}</div>
                                 </div>
 
@@ -328,60 +328,60 @@
                                 </div>
 
                                 <div class="col-md-4 mb-3">
-                                    <label class="fw-bold">Número de cliente</label>
+                                    <label class="fw-bold">{{ __('Número de cliente') }}</label>
                                     <div class="form-control bg-light">{{ $customer->customer_number ?? '—' }}</div>
                                 </div>
 
                                 <div class="col-md-4 mb-3">
-                                    <label class="fw-bold">Cliente desde</label>
+                                    <label class="fw-bold">{{ __('Cliente desde') }}</label>
                                     <div class="form-control bg-light">{{ $fmt($user->created_at) }}</div>
                                 </div>
 
                                 <div class="col-md-4 mb-3">
-                                    <label class="fw-bold">Última compra</label>
+                                    <label class="fw-bold">{{ __('Última compra') }}</label>
                                     <div class="form-control bg-light">{{ $fmt($customer->last_purchase_at ?? null) }}</div>
                                 </div>
 
                             </div>
 
                             <hr>
-                            <h6 class="text-muted mb-3">Direccion</h6>
+                            <h6 class="text-muted mb-3">{{ __('Direccion') }}</h6>
                             @if($address)
                                 <div class="row">
                                     <div class="col-md-8 mb-3">
-                                        <label class="fw-bold">Dirección</label>
+                                        <label class="fw-bold">{{ __('Dirección') }}</label>
                                         <div class="form-control bg-light">{{ $address->address }}</div>
                                     </div>
 
                                     <div class="col-md-4 mb-3">
-                                        <label class="fw-bold">Zona / Referencia</label>
+                                        <label class="fw-bold">{{ __('Zona / Referencia') }}</label>
                                         <div class="form-control bg-light">{{ $address->address2 ?: '—' }}</div>
                                     </div>
 
                                     <div class="col-md-4 mb-3">
-                                        <label class="fw-bold">Departamento</label>
+                                        <label class="fw-bold">{{ __('Departamento') }}</label>
                                         <div class="form-control bg-light">{{ optional($address->province)->name ?? '—' }}</div>
                                     </div>
 
                                     <div class="col-md-4 mb-3">
-                                        <label class="fw-bold">Ciudad / Municipio</label>
+                                        <label class="fw-bold">{{ __('Ciudad / Municipio') }}</label>
                                         <div class="form-control bg-light">{{ $address->city ?: '—' }}</div>
                                     </div>
 
                                     <div class="col-md-4 mb-3">
-                                        <label class="fw-bold">Código postal</label>
+                                        <label class="fw-bold">{{ __('Código postal') }}</label>
                                         <div class="form-control bg-light">{{ $address->postalcode ?: '—' }}</div>
                                     </div>
 
                                     <div class="col-md-4 mb-3">
-                                        <label class="fw-bold">País</label>
+                                        <label class="fw-bold">{{ __('País') }}</label>
                                         <div class="form-control bg-light">{{ optional($address->country)->name ?? $address->country_id }}</div>
                                     </div>
                                 </div>
                             @else
                                 <div class="alert alert-light border">
-                                    Aún no tienes una dirección registrada.
-                                    <a href="{{ route('home', ['section' => 'profile', 'edit' => 1]) }}">Agrégala aquí</a>.
+                                    {{ __('Aún no tienes una dirección registrada.') }}
+                                    <a href="{{ route('home', ['section' => 'profile', 'edit' => 1]) }}">{{ __('Agrégala aquí') }}</a>.
                                 </div>
                             @endif
 
@@ -400,7 +400,7 @@
                 <div class="card">
 
                     <div class="card-header">
-                        <h5>Mis Pedidos</h5>
+                        <h5>{{ __('Mis Pedidos') }}</h5>
                     </div>
 
                     <div class="card-body">
@@ -415,7 +415,7 @@
                         @if ($orders->isEmpty())
 
                             <div class="alert alert-info">
-                                Aún no tienes pedidos realizados.
+                                {{ __('Aún no tienes pedidos realizados.') }}
                             </div>
 
                         @else
@@ -433,13 +433,13 @@
                                             <div>
 
                                                 <strong>
-                                                    Orden #{{ $order->number }}
+                                                    {{ __('Orden #') }}{{ $order->number }}
                                                 </strong>
 
                                                 <br>
 
                                                 <small class="text-muted">
-                                                    Fecha:
+                                                    {{ __('Fecha:') }}
                                                     {{ \Carbon\Carbon::parse($order->ordered_at)->format('d/m/Y H:i') }}
                                                 </small>
 
@@ -461,7 +461,7 @@
                                                         action="{{ route('orders.cancel', $order->id) }}"
                                                         method="POST"
                                                         style="display: inline;"
-                                                        onsubmit="return confirm('Seguro que deseas cancelar este pedido?');"
+                                                        onsubmit="return confirm(@js(__('¿Seguro que deseas cancelar este pedido?')));"
                                                     >
 
                                                         @csrf
@@ -470,7 +470,7 @@
                                                             type="submit"
                                                             class="btn btn-sm btn-danger"
                                                         >
-                                                            Cancelar pedido
+                                                            {{ __('Cancelar pedido') }}
                                                         </button>
 
                                                     </form>
@@ -526,14 +526,14 @@
                                                     </h6>
 
                                                     <small class="text-muted">
-                                                        Código:
+                                                        {{ __('Código:') }}
                                                         {{ $item->product->sku ?? 'Sin codigo' }}
                                                     </small>
 
                                                     <br>
 
                                                     <small>
-                                                        Cantidad:
+                                                        {{ __('Cantidad:') }}
                                                         {{ $item->quantity }}
                                                     </small>
 
@@ -576,13 +576,13 @@
                 <div class="card">
 
                     <div class="card-header">
-                        <h5 class="mb-0">Mis Favoritos</h5>
+                        <h5 class="mb-0">{{ __('Mis Favoritos') }}</h5>
                     </div>
 
                     <div class="card-body">
                         @if($favorites->isEmpty())
                             <div class="alert alert-info">
-                                Aún no tienes productos favoritos.
+                                {{ __('Aún no tienes productos favoritos.') }}
                             </div>
                         @else
                             @include('product._grid', ['products' => $favorites, 'removeOnUnfavorite' => true])
@@ -601,17 +601,17 @@
             @php
                 $editingId = request('edit_address');
                 $showNew   = request('new') || ($errors->any() && ! $editingId);
-                $typeNames = ['shipping' => 'Envío', 'billing' => 'Facturación'];
+                $typeNames = ['shipping' => __('Envío'), 'billing' => __('Facturación')];
             @endphp
 
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Direcciones guardadas</h5>
+                    <h5 class="mb-0">{{ __('Direcciones guardadas') }}</h5>
 
                     @if (! $showNew && ! $editingId)
                         <a href="{{ route('home', ['section' => 'addresses', 'new' => 1]) }}"
                         class="btn btn-sm btn-outline-danger">
-                            + Agregar dirección
+                            {{ __('+ Agregar dirección') }}
                         </a>
                     @endif
                 </div>
@@ -671,7 +671,7 @@
                                         <div class="mb-1">
                                             <span class="badge bg-secondary">{{ $typeNames[$addrType] ?? $addrType }}</span>
                                             @if ($isDefault)
-                                                <span class="badge bg-success">Predeterminada</span>
+                                                <span class="badge bg-success">{{ __('Predeterminada') }}</span>
                                             @endif
                                         </div>
 
@@ -681,34 +681,34 @@
                                         {{ optional($addr->country)->name ?? $addr->country_id }}<br>
 
                                         @if ($addr->phone)
-                                            <small class="text-muted">Tel: {{ $addr->phone }}</small><br>
+                                            <small class="text-muted">{{ __('Tel:') }} {{ $addr->phone }}</small><br>
                                         @endif
                                         @if ($addr->tax_nr)
-                                            <small class="text-muted">NIT: {{ $addr->tax_nr }}</small>
+                                            <small class="text-muted">{{ __('NIT:') }} {{ $addr->tax_nr }}</small>
                                         @endif
                                     </div>
 
                                     <div class="d-flex flex-column gap-2 align-items-end">
                                         <a href="{{ route('home', ['section' => 'addresses', 'edit_address' => $addr->id]) }}"
                                         class="btn btn-sm btn-outline-secondary">
-                                            ✎ Editar
+                                            {{ __('✎ Editar') }}
                                         </a>
 
                                         @if (! $isDefault)
                                             <form action="{{ route('addresses.default', $addr->id) }}" method="POST">
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-outline-success">
-                                                    Usar como predeterminada
+                                                    {{ __('Usar como predeterminada') }}
                                                 </button>
                                             </form>
                                         @endif
 
                                         <form action="{{ route('addresses.destroy', $addr->id) }}" method="POST"
-                                            onsubmit="return confirm('¿Seguro que deseas eliminar esta dirección?');">
+                                            onsubmit="return confirm(@js(__('¿Seguro que deseas eliminar esta dirección?')));">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                Eliminar
+                                                {{ __('Eliminar') }}
                                             </button>
                                         </form>
                                     </div>
@@ -722,8 +722,8 @@
 
                         @if (! $showNew)
                             <div class="alert alert-info">
-                                Aún no tienes direcciones guardadas.
-                                <a href="{{ route('home', ['section' => 'addresses', 'new' => 1]) }}">Agrega la primera</a>.
+                                {{ __('Aún no tienes direcciones guardadas.') }}
+                                <a href="{{ route('home', ['section' => 'addresses', 'new' => 1]) }}">{{ __('Agrega la primera') }}</a>.
                             </div>
                         @endif
 
@@ -741,13 +741,13 @@
                 <div class="card">
 
                     <div class="card-header">
-                        <h5>Tarjetas guardadas</h5>
+                        <h5>{{ __('Tarjetas guardadas') }}</h5>
                     </div>
 
                     <div class="card-body">
 
                         <div class="alert alert-info">
-                            Aquí aparecerán tus tarjetas guardadas.
+                            {{ __('Aquí aparecerán tus tarjetas guardadas.') }}
                         </div>
 
                     </div>

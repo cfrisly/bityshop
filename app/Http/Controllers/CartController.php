@@ -35,7 +35,7 @@ class CartController extends Controller
             return redirect()->route('checkout.show');
         }
 
-        flash()->success($product->name . ' se agregó al carrito');
+        flash()->success(__(':producto se agregó al carrito', ['producto' => $product->name]));
 
         return redirect()->route('cart.show');
     }
@@ -51,7 +51,7 @@ class CartController extends Controller
     public function addVariant(MasterProductVariant $masterProductVariant)
     {
         Cart::addItem($masterProductVariant);
-        flash()->success($masterProductVariant->name . ' se agregó al carrito');
+        flash()->success(__(':producto se agregó al carrito', ['producto' => $masterProductVariant->name]));
 
         return redirect()->route('cart.show');
     }
@@ -64,7 +64,7 @@ class CartController extends Controller
         }
 
         Cart::removeItem($cart_item);
-        flash()->info($cart_item->getBuyable()->getName() . ' se quitó del carrito');
+        flash()->info(__(':producto se quitó del carrito', ['producto' => $cart_item->getBuyable()->getName()]));
 
         return redirect()->route('cart.show');
     }
@@ -101,7 +101,7 @@ class CartController extends Controller
 
         Auth::user()->favoriteProducts()->syncWithoutDetaching([$product->id]);
         Cart::removeItem($cart_item);
-        flash()->success($product->getName() . ' se movió a tus favoritos');
+        flash()->success(__(':producto se movió a tus favoritos', ['producto' => $product->getName()]));
 
         return redirect()->route('cart.show');
     }
@@ -113,7 +113,7 @@ class CartController extends Controller
         $coupon = $code !== '' ? CouponProxy::findByCode($code) : null;
 
         if (!$coupon || !$coupon->canBeUsed() || !$coupon->getPromotion()->isValid()) {
-            return redirect()->route('cart.show')->with('cupon_error', 'Ese cupón no existe o ya no está vigente.');
+            return redirect()->route('cart.show')->with('cupon_error', __('Ese cupón no existe o ya no está vigente.'));
         }
 
         $coupons = session(CuponesDeSesion::CLAVE, []);
@@ -128,9 +128,9 @@ class CartController extends Controller
         $checkout->addCoupon($coupon->code);
 
         if (Carrito::descuento() >= 0) {
-            flash()->warning('El cupón ' . $coupon->code . ' es válido, pero tu carrito todavía no cumple sus condiciones.');
+            flash()->warning(__('El cupón :codigo es válido, pero tu carrito todavía no cumple sus condiciones.', ['codigo' => $coupon->code]));
         } else {
-            flash()->success('Cupón ' . $coupon->code . ' aplicado.');
+            flash()->success(__('Cupón :codigo aplicado.', ['codigo' => $coupon->code]));
         }
 
         return redirect()->route('cart.show');
@@ -152,7 +152,7 @@ class CartController extends Controller
     public function show()
     {
         if ($cambiados = Carrito::actualizarPrecios()) {
-            flash()->info('Actualizamos el precio de: ' . implode(', ', $cambiados) . '.');
+            flash()->info(__('Actualizamos el precio de: :productos.', ['productos' => implode(', ', $cambiados)]));
         }
 
         $address = Carrito::direccionCliente();
@@ -190,7 +190,10 @@ class CartController extends Controller
     /** Fecha en español, contando solo días hábiles (ej. "mar. 24 de nov.") */
     public static function businessDaysFromToday(int $days): string
     {
-        return Carbon::now()->locale('es')->addWeekdays(max(0, $days))->translatedFormat('D j \d\e M');
+        // Formato según el idioma de la tienda: "mar. 24 de nov." / "Tue, Nov 24"
+        $formato = app()->getLocale() === 'es' ? 'D j \d\e M' : 'D, M j';
+
+        return Carbon::now()->locale(app()->getLocale())->addWeekdays(max(0, $days))->translatedFormat($formato);
     }
 
     private function isInCurrentCart(CartItem $cart_item): bool

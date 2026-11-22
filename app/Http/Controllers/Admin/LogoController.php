@@ -32,7 +32,7 @@ class LogoController extends Controller
         $data['imagen'] = $request->file('imagen')->store('logos', 'public');
 
         $logo = DB::transaction(fn () => $this->guardar(new Logo(), $data));
-        flash()->success('Logo "' . $logo->nombre . '" guardado.');
+        flash()->success(__('Logo ":nombre" guardado.', ['nombre' => $logo->nombre]));
 
         return redirect()->route('tienda.admin.logo.index');
     }
@@ -52,7 +52,7 @@ class LogoController extends Controller
         }
 
         DB::transaction(fn () => $this->guardar($logo, $data));
-        flash()->success('Logo "' . $logo->nombre . '" actualizado.');
+        flash()->success(__('Logo ":nombre" actualizado.', ['nombre' => $logo->nombre]));
 
         return redirect()->route('tienda.admin.logo.index');
     }
@@ -61,7 +61,7 @@ class LogoController extends Controller
     {
         Storage::disk('public')->delete($logo->imagen);
         $logo->delete();
-        flash()->info('Logo "' . $logo->nombre . '" eliminado.');
+        flash()->info(__('Logo ":nombre" eliminado.', ['nombre' => $logo->nombre]));
 
         return redirect()->route('tienda.admin.logo.index');
     }
@@ -77,13 +77,13 @@ class LogoController extends Controller
             'desde' => [$esPrincipal ? 'nullable' : 'required', 'date'],
             'hasta' => [$esPrincipal ? 'nullable' : 'required', 'date', ...($request->boolean('cada_anio') ? [] : ['after_or_equal:desde'])],
         ], [
-            'imagen.required' => 'Sube la imagen del logo.',
-            'imagen.image' => 'Formato no válido. Usa PNG, JPG, WEBP o GIF (SVG no se acepta: expórtalo como PNG).',
-            'imagen.mimes' => 'Formato no válido. Usa PNG, JPG, WEBP o GIF (SVG no se acepta: expórtalo como PNG).',
-            'imagen.max' => 'La imagen no puede pesar más de 2 MB.',
-            'desde.required' => 'Indica desde qué fecha se muestra.',
-            'hasta.required' => 'Indica hasta qué fecha se muestra.',
-            'hasta.after_or_equal' => 'La fecha final tiene que ser igual o posterior a la inicial.',
+            'imagen.required' => __('Sube la imagen del logo.'),
+            'imagen.image' => __('Formato no válido. Usa PNG, JPG, WEBP o GIF (SVG no se acepta: expórtalo como PNG).'),
+            'imagen.mimes' => __('Formato no válido. Usa PNG, JPG, WEBP o GIF (SVG no se acepta: expórtalo como PNG).'),
+            'imagen.max' => __('La imagen no puede pesar más de 2 MB.'),
+            'desde.required' => __('Indica desde qué fecha se muestra.'),
+            'hasta.required' => __('Indica hasta qué fecha se muestra.'),
+            'hasta.after_or_equal' => __('La fecha final tiene que ser igual o posterior a la inicial.'),
         ]);
 
         $data['es_principal'] = $esPrincipal;

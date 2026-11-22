@@ -250,7 +250,7 @@
                     @endif
 
                     @if ($onSale)
-                        <span class="pc-discount">{{ $discount }}% off</span>
+                        <span class="pc-discount">{{ $discount }}{{ __('% off') }}</span>
                     @endif
                 </a>
 
@@ -262,7 +262,7 @@
                           class="pc-fav-form" data-remove="{{ $removeOnUnfavorite ? 1 : 0 }}">
                         @csrf
                         <button type="submit" class="pc-fav {{ $isFav ? 'pc-fav--active' : '' }}"
-                                title="{{ $isFav ? 'Quitar de favoritos' : 'Agregar a favoritos' }}">
+                                title="{{ $isFav ? __('Quitar de favoritos') : __('Agregar a favoritos') }}">
                             <svg width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>
                             </svg>
@@ -270,7 +270,7 @@
                     </form>
                     @else
                         {{-- Sin sesión: lleva a iniciar sesión --}}
-                        <a href="{{ route('login') }}" class="pc-fav" title="Inicia sesión para guardar favoritos">
+                        <a href="{{ route('login') }}" class="pc-fav" title="{{ __('Inicia sesión para guardar favoritos') }}">
                             <svg width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>
                             </svg>
@@ -297,7 +297,7 @@
 
                 @if ($onSale)
                     <div class="pc-savings">
-                        Ahorras <strong>Q{{ number_format($savings, 0) }}</strong> por tiempo limitado
+                        {{ __('Ahorras') }} <strong>Q{{ number_format($savings, 0) }}</strong> {{ __('por tiempo limitado') }}
                     </div>
                 @endif
 
@@ -308,11 +308,11 @@
                         @if ($fast)
                             <span class="pc-badge pc-badge--fast">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
-                                Entrega rápida
+                                {{ __('Entrega rápida') }}
                             </span>
                         @endif
                         @if ($freeShip)
-                            <span class="pc-badge pc-badge--free">Envío GRATIS</span>
+                            <span class="pc-badge pc-badge--free">{{ __('Envío GRATIS') }}</span>
                         @endif
                     </div>
 
@@ -327,7 +327,7 @@
                                 <line x1="17" y1="2" x2="17" y2="6"/>
                                 <line x1="15" y1="4" x2="19" y2="4"/>
                             </svg>
-                            Comprar
+                            {{ __('Comprar') }}
                         </button>
                     </form>
 
@@ -361,7 +361,7 @@
         .then(function (data) {
             var button = form.querySelector('.pc-fav');
             button.classList.toggle('pc-fav--active', data.favorite);
-            button.title = data.favorite ? 'Quitar de favoritos' : 'Agregar a favoritos';
+            button.title = data.favorite ? @json(__('Quitar de favoritos')) : @json(__('Agregar a favoritos'));
 
             // En la sección "Favoritos", la tarjeta desaparece al quitarla
             if (!data.favorite && form.dataset.remove === '1') {

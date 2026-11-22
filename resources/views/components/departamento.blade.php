@@ -11,7 +11,7 @@
 <div {{ $attributes->merge(['class' => 'js-departamento']) }} data-country-select="{{ $countrySelect }}" data-required="{{ $required ? 1 : 0 }}">
     <label for="{{ $id }}" class="fw-bold">{{ $label }}</label>
     <select name="{{ $name }}" id="{{ $id }}" class="{{ $inputClass }} {{ $errors->has($errorKey) ? 'is-invalid' : '' }}" data-departamento>
-        <option value="">Selecciona el departamento</option>
+        <option value="">{{ __('Selecciona el departamento') }}</option>
         @foreach (\App\Support\Envio::departamentos() as $dep)
             <option value="{{ $dep->id }}" @selected((string) old($errorKey, $value) === (string) $dep->id)>{{ $dep->name }}</option>
         @endforeach

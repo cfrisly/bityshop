@@ -26,7 +26,7 @@
 
             <div class="container">
                 @yield('categories-menu')
-                <nav aria-label="breadcrumb">
+                <nav aria-label="{{ __('breadcrumb') }}">
                     <ol class="breadcrumb bg-transparent">
                         @yield('breadcrumbs')
                     </ol>
@@ -44,39 +44,39 @@
                 <div class="row">
 
                     <div class="col-md-3">
-                        <h4>Mi cuenta</h4>
+                        <h4>{{ __('Mi cuenta') }}</h4>
                         <ul class="list-unstyled">
-                            <li><a href="{{ route('home', ['section' => 'profile']) }}">Mi perfil</a></li>
-                            <li><a href="{{ route('home', ['section' => 'orders']) }}">Mis Pedidos</a></li>
-                            <li><a href="{{ route('home', ['section' => 'favorites']) }}">Favoritos</a></li>
+                            <li><a href="{{ route('home', ['section' => 'profile']) }}">{{ __('Mi perfil') }}</a></li>
+                            <li><a href="{{ route('home', ['section' => 'orders']) }}">{{ __('Mis Pedidos') }}</a></li>
+                            <li><a href="{{ route('home', ['section' => 'favorites']) }}">{{ __('Favoritos') }}</a></li>
                         </ul>
                     </div>
 
                     <div class="col-md-3">
-                        <h4>Informacion</h4>
+                        <h4>{{ __('Informacion') }}</h4>
                         <ul class="list-unstyled">
-                            <li><a href="#">Sobre Nosotros</a></li>
-                            <li><a href="#">Terminos y Condiciones</a></li>
-                            <li><a href="#">Politica y Privacidad</a></li>
-                            <li><a href="#">Politica y cookies</a></li>
+                            <li><a href="#">{{ __('Sobre Nosotros') }}</a></li>
+                            <li><a href="#">{{ __('Terminos y Condiciones') }}</a></li>
+                            <li><a href="#">{{ __('Politica y Privacidad') }}</a></li>
+                            <li><a href="#">{{ __('Politica y cookies') }}</a></li>
                         </ul>
                     </div>
 
                     <div class="col-md-3">
-                        <h4>Pagos seguros</h4>
+                        <h4>{{ __('Pagos seguros') }}</h4>
                         <p>
-                            Visa · Mastercard · PayPal · Stripe
+                            {{ __('Visa · Mastercard · PayPal · Stripe') }}
                         </p>
-                        <h4>Siguenos</h4>
+                        <h4>{{ __('Siguenos') }}</h4>
                         <p>
-                            Facebook · Instagram · X
+                            {{ __('Facebook · Instagram · X') }}
                         </p>
                     </div>
 
                     <div class="text-center">
                         <p>
-                            © {{ date('Y') }} Bity Shop
-                            Todos los derechos reservados.
+                            © {{ date('Y') }} {{ __('Bity Shop
+                            Todos los derechos reservados.') }}
                         </p>
                     </div>
                 </div>

@@ -30,7 +30,7 @@ class AddressController extends Controller
             $this->syncDefault($customer, $address, ! empty($data['is_default']));
         });
 
-        return $this->backToList('Dirección agregada correctamente.');
+        return $this->backToList(__('Dirección agregada correctamente.'));
     }
 
     /** Editar una edicion existente */
@@ -46,7 +46,7 @@ class AddressController extends Controller
             $this->syncDefault($customer, $address, ! empty($data['is_default']));
         });
 
-        return $this->backToList('Dirección actualizada correctamente');
+        return $this->backToList(__('Dirección actualizada correctamente'));
     }
 
     /** Eliminar una direccion */
@@ -74,7 +74,7 @@ class AddressController extends Controller
                 $address->delete();
         });
 
-        return $this->backToList('Dirección eliminada.');
+        return $this->backToList(__('Dirección eliminada.'));
     }
 
     /** Marcar una direccion como predeterminada de su tipo */
@@ -84,7 +84,7 @@ class AddressController extends Controller
         $address = $customer->addresses()->findOrFail($id);
         $this->syncDefault($customer, $address, true);
 
-        return $this->backToList('Dirección predeterminada actualizada');
+        return $this->backToList(__('Dirección predeterminada actualizada'));
     }
 
     /** Auxiliares */
@@ -102,13 +102,13 @@ class AddressController extends Controller
             'province_id' => ['nullable', 'required_if:country_id,GT', Rule::exists('provinces', 'id')->where('country_id', $request->input('country_id'))],
             'is_default' => ['nullable'],
             ],[
-            'name.required' => 'Indica el nombre de quien recibe.',
-            'address.required' => 'La dirección es obligatoria.',
-            'city.required' => 'La ciudad o municipio es obligatoria',
-            'country_id.required' => 'Selecciona el pais.',
-            'country_id.exists' => 'El país seleccionado no es válido.',
-            'province_id.required_if' => 'Selecciona el departamento.',
-            'province_id.exists' => 'El departamento no corresponde al país.',
+            'name.required' => __('Indica el nombre de quien recibe.'),
+            'address.required' => __('La dirección es obligatoria.'),
+            'city.required' => __('La ciudad o municipio es obligatoria'),
+            'country_id.required' => __('Selecciona el pais.'),
+            'country_id.exists' => __('El país seleccionado no es válido.'),
+            'province_id.required_if' => __('Selecciona el departamento.'),
+            'province_id.exists' => __('El departamento no corresponde al país.'),
         ]);
     }
 

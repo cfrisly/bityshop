@@ -83,69 +83,69 @@
 
             {{-- Categorías --}}
             <div class="dropdown">
-                <button class="bn-cat" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Categorías">
+                <button class="bn-cat" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="{{ __('Categorías') }}">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg>
-                    <span class="bn-hide-sm">Categorías</span>
+                    <span class="bn-hide-sm">{{ __('Categorías') }}</span>
                 </button>
                 <div class="dropdown-menu bn-menu">
                     @foreach($navTaxonomies as $taxonomy)
                         @include('product.index._category_level', ['taxons' => $taxonomy->raices])
                     @endforeach
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item fw-bold" href="{{ route('product.index') }}">Ver todos los productos →</a>
+                    <a class="dropdown-item fw-bold" href="{{ route('product.index') }}">{{ __('Ver todos los productos →') }}</a>
                 </div>
             </div>
 
             {{-- Buscador --}}
             <div class="bn-search-wrap" id="bn-search-wrap">
                 <form action="{{ route('product.search') }}" method="GET" class="bn-search" role="search">
-                    <input type="search" name="q" id="bn-q" value="{{ request('q') }}" placeholder="¿Qué producto estás buscando?"
-                           aria-label="Buscar productos" maxlength="100" enterkeyhint="search" autocomplete="off"
+                    <input type="search" name="q" id="bn-q" value="{{ request('q') }}" placeholder="{{ __('¿Qué producto estás buscando?') }}"
+                           aria-label="{{ __('Buscar productos') }}" maxlength="100" enterkeyhint="search" autocomplete="off"
                            role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="bn-sug"
                            data-url="{{ route('product.suggest') }}">
-                    <button type="submit" aria-label="Buscar">
+                    <button type="submit" aria-label="{{ __('Buscar') }}">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
                     </button>
                 </form>
-                <div class="bn-sug" id="bn-sug" role="listbox" aria-label="Sugerencias"></div>
+                <div class="bn-sug" id="bn-sug" role="listbox" aria-label="{{ __('Sugerencias') }}"></div>
             </div>
 
-            <a href="{{ auth()->check() ? route('home', ['section' => 'favorites']) : route('login') }}" class="bn-icon bn-hide-sm" title="Favoritos">
+            <a href="{{ auth()->check() ? route('home', ['section' => 'favorites']) : route('login') }}" class="bn-icon bn-hide-sm" title="{{ __('Favoritos') }}">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20s-7-4.4-9-9a4.8 4.8 0 0 1 9-3 4.8 4.8 0 0 1 9 3c-2 4.6-9 9-9 9z"/></svg>
-                Favoritos
+                {{ __('Favoritos') }}
             </a>
 
-            <a href="{{ route('cart.show') }}" class="bn-icon" title="Carrito">
+            <a href="{{ route('cart.show') }}" class="bn-icon" title="{{ __('Carrito') }}">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.5L21 8H6"/></svg>
-                <span class="bn-hide-sm">Carrito</span>
+                <span class="bn-hide-sm">{{ __('Carrito') }}</span>
                 @if($navCartCount)
                     <span class="bn-badge">{{ $navCartCount }}</span>
                 @endif
             </a>
 
             <div class="dropdown">
-                <button class="bn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Mi cuenta">
+                <button class="bn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="{{ __('Mi cuenta') }}">
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-                    <span class="bn-hide-sm">{{ auth()->check() ? \Illuminate\Support\Str::limit(Auth::user()->name, 12) : 'Mi cuenta' }}</span>
+                    <span class="bn-hide-sm">{{ auth()->check() ? \Illuminate\Support\Str::limit(Auth::user()->name, 12) : __('Mi cuenta') }}</span>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end bn-menu" style="min-width: 220px;">
                     @guest
-                        <a class="dropdown-item fw-bold" href="{{ route('login') }}">Inicia sesión</a>
+                        <a class="dropdown-item fw-bold" href="{{ route('login') }}">{{ __('Inicia sesión') }}</a>
                         @if (Route::has('register'))
-                            <a class="dropdown-item" href="{{ route('register') }}">Crea tu cuenta</a>
+                            <a class="dropdown-item" href="{{ route('register') }}">{{ __('Crea tu cuenta') }}</a>
                         @endif
                     @else
-                        <a class="dropdown-item" href="{{ route('home', ['section' => 'profile']) }}">Mi perfil</a>
-                        <a class="dropdown-item" href="{{ route('home', ['section' => 'orders']) }}">Mis compras</a>
-                        <a class="dropdown-item" href="{{ route('home', ['section' => 'favorites']) }}">Favoritos</a>
-                        <a class="dropdown-item" href="{{ route('home', ['section' => 'addresses']) }}">Mis direcciones</a>
+                        <a class="dropdown-item" href="{{ route('home', ['section' => 'profile']) }}">{{ __('Mi perfil') }}</a>
+                        <a class="dropdown-item" href="{{ route('home', ['section' => 'orders']) }}">{{ __('Mis compras') }}</a>
+                        <a class="dropdown-item" href="{{ route('home', ['section' => 'favorites']) }}">{{ __('Favoritos') }}</a>
+                        <a class="dropdown-item" href="{{ route('home', ['section' => 'addresses']) }}">{{ __('Mis direcciones') }}</a>
                         @role('admin')
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ config('konekt.app_shell.ui.url') }}">Administración</a>
+                            <a class="dropdown-item" href="{{ config('konekt.app_shell.ui.url') }}">{{ __('Administración') }}</a>
                         @endrole
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ route('logout') }}"
-                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Cerrar sesión</a>
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">{{ __('Cerrar sesión') }}</a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
                     @endguest
                 </div>
@@ -153,15 +153,15 @@
         </div>
     </div>
 
-    <nav class="bn-bottom" aria-label="Secciones">
+    <nav class="bn-bottom" aria-label="{{ __('Secciones') }}">
         <div class="container">
             <a href="{{ route('product.ofertas') }}" class="bn-link bn-pill">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="vertical-align:-2px"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></svg>
-                Ofertas
+                {{ __('Ofertas') }}
             </a>
             <a href="{{ route('product.nuevo') }}" class="bn-link bn-pill2">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="vertical-align:-2px"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></svg>
-                Lo + nuevo
+                {{ __('Lo + nuevo') }}
             </a>
             @foreach($navCategorias as $cat)
                 <a href="{{ route('product.category', [$cat->taxonomy->slug, $cat]) }}" class="bn-link">{{ $cat->name }}</a>
@@ -180,6 +180,7 @@
     if (!input || !box || !window.fetch) { return; }
 
     var timer = null, controller = null, items = [], active = -1, cache = {};
+    var T = {!! json_encode(['productos' => __('Productos'), 'categorias' => __('Categorías'), 'sinResultados' => __('No encontramos productos para “:q”.'), 'quisisteDecir' => __('¿Quisiste decir'), 'verTodos' => __('Ver todos los resultados para “:q”')], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
 
     function el(tag, cls, text) {
         var e = document.createElement(tag);
@@ -213,7 +214,7 @@
     function pintar(data, q) {
         box.innerHTML = '';
         if (data.productos.length) {
-            box.appendChild(el('div', 'bn-sug-title', 'Productos'));
+            box.appendChild(el('div', 'bn-sug-title', T.productos));
             data.productos.forEach(function (p) {
                 var a = el('a'); a.href = p.url; a.setAttribute('role', 'option');
                 var img = el('img'); img.src = p.imagen; img.alt = ''; img.loading = 'lazy';
@@ -225,7 +226,7 @@
             });
         }
         if (data.categorias.length) {
-            box.appendChild(el('div', 'bn-sug-title', 'Categorías'));
+            box.appendChild(el('div', 'bn-sug-title', T.categorias));
             data.categorias.forEach(function (c) {
                 var a = el('a', 'bn-sug-cat'); a.href = c.url; a.setAttribute('role', 'option');
                 a.appendChild(el('span', '', '▸ ')); a.appendChild(resaltar(c.nombre, q));
@@ -233,10 +234,10 @@
             });
         }
         if (!data.productos.length && !data.categorias.length) {
-            var vacio = el('div', 'bn-sug-empty', 'No encontramos productos para “' + q + '”.');
+            var vacio = el('div', 'bn-sug-empty', T.sinResultados.replace(':q', q));
             if (data.sugerencia) {
                 vacio.appendChild(document.createElement('br'));
-                vacio.appendChild(document.createTextNode('¿Quisiste decir '));
+                vacio.appendChild(document.createTextNode(T.quisisteDecir + ' '));
                 var s = el('a', '', data.sugerencia);
                 s.href = data.todos.replace(/q=[^&]*/, 'q=' + encodeURIComponent(data.sugerencia));
                 s.style.cssText = 'display:inline;padding:0;font-weight:800;color:#0b5f69';
@@ -244,7 +245,7 @@
             }
             box.appendChild(vacio);
         } else {
-            var todos = el('a', 'bn-sug-all', 'Ver todos los resultados para “' + q + '” →');
+            var todos = el('a', 'bn-sug-all', T.verTodos.replace(':q', q) + ' →');
             todos.href = data.todos; todos.setAttribute('role', 'option');
             box.appendChild(todos);
         }

@@ -25,7 +25,7 @@ class FavoriteController extends Controller
         // Respuesta normal si el navegador no uso JavaScript
         return back()->with(
             'success',
-            $isFavorite ? 'Producto agregado a favoritos.' : 'Producto quitado de favoritos.'
+            $isFavorite ? __('Producto agregado a favoritos.') : __('Producto quitado de favoritos.')
         );
     }
 }

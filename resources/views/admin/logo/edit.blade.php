@@ -1,7 +1,7 @@
 @extends('appshell::layouts.private')
 
 @section('title')
-    Editar logo
+    {{ __('Editar logo') }}
 @stop
 
 @section('content')
@@ -9,13 +9,13 @@
         @csrf
         @method('PUT')
         <x-appshell::card accent="success">
-            <x-slot:title>Editar logo</x-slot:title>
+            <x-slot:title>{{ __('Editar logo') }}</x-slot:title>
 
             @include('admin.logo._form')
 
             <x-slot:footer>
-                <button class="btn btn-success">Guardar cambios</button>
-                <a href="{{ route('tienda.admin.logo.index') }}" class="btn btn-link text-muted">Cancelar</a>
+                <button class="btn btn-success">{{ __('Guardar cambios') }}</button>
+                <a href="{{ route('tienda.admin.logo.index') }}" class="btn btn-link text-muted">{{ __('Cancelar') }}</a>
             </x-slot:footer>
         </x-appshell::card>
     </form>

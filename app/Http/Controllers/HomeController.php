@@ -76,16 +76,16 @@ class HomeController extends Controller
             'country_id'   => ['nullable', 'required_with:address', 'exists:countries,id'],
             'province_id'  => ['nullable', Rule::requiredIf(fn () => $request->filled('address') && $request->input('country_id') === 'GT'), Rule::exists('provinces', 'id')->where('country_id', $request->input('country_id'))],
         ],[
-            'firstname.required' => 'El nombre es obligatorio.',
-            'email.required' => 'El correo es obligatorio.',
-            'email.email' => 'El correo tiene un formato no valido',
-            'email.unique' => 'Ese correo ya esta registrado por otro usuario.',
-            'company_name.required_if' => 'Si eres empresa, indica el nombre de la empresa.',
-            'city.required_with'       => 'Si ingresas una dirección, indica también la ciudad.',
-            'country_id.required_with' => 'Si ingresas una dirección, selecciona el país.',
-            'country_id.exists'        => 'El país seleccionado no es válido.',
-            'province_id.required'     => 'Selecciona el departamento.',
-            'province_id.exists'       => 'El departamento no corresponde al país.',
+            'firstname.required' => __('El nombre es obligatorio.'),
+            'email.required' => __('El correo es obligatorio.'),
+            'email.email' => __('El correo tiene un formato no valido'),
+            'email.unique' => __('Ese correo ya esta registrado por otro usuario.'),
+            'company_name.required_if' => __('Si eres empresa, indica el nombre de la empresa.'),
+            'city.required_with'       => __('Si ingresas una dirección, indica también la ciudad.'),
+            'country_id.required_with' => __('Si ingresas una dirección, selecciona el país.'),
+            'country_id.exists'        => __('El país seleccionado no es válido.'),
+            'province_id.required'     => __('Selecciona el departamento.'),
+            'province_id.exists'       => __('El departamento no corresponde al país.'),
         ]);
 
         DB::transaction(function()use($user, $data) {
@@ -147,7 +147,7 @@ class HomeController extends Controller
 
         return redirect()
             ->route('home', ['section' => 'profile'])
-            ->with('success', 'Tus datos se encuentran actualizados correctamente.');
+            ->with('success', __('Tus datos se encuentran actualizados correctamente.'));
     }
 
     /** Cliente ligado al usuario; si no tiene, busca uno con su mismo correo. */

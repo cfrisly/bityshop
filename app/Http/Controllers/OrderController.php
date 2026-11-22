@@ -22,7 +22,7 @@ class OrderController extends Controller
         if ($order->status->value() != OrderStatus::PENDING) {
             return redirect()
                 ->route('home', ['section' => 'orders'])
-                ->with('error', 'Este pedido ya no puede ser cancelado');
+                ->with('error', __('Este pedido ya no puede ser cancelado'));
         }
 
         //Cancelar pedido
@@ -31,6 +31,6 @@ class OrderController extends Controller
 
         return redirect()
             ->route('home', ['section' => 'orders'])
-            ->with('success', 'El pedido fue cancelado correctamente.');
+            ->with('success', __('El pedido fue cancelado correctamente.'));
     }
 }
