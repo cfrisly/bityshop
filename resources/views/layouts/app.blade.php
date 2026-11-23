@@ -32,6 +32,9 @@
                     </ol>
                 </nav>
                 @include('flash::message')
+                @if (session('verified'))
+                    <div class="alert alert-success">{{ __('¡Listo! Tu correo quedó verificado.') }}</div>
+                @endif
             </div>
 
             @yield('content')

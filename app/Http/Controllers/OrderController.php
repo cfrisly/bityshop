@@ -10,7 +10,7 @@ class OrderController extends Controller
     public function __construct()
     {
         // Sin sesión no se puede cancelar nada (antes un visitante podía cancelar pedidos de invitados)
-        $this->middleware('auth');
+        $this->middleware(['auth', 'verified']);
     }
 
     public function cancel($id)

@@ -59,5 +59,10 @@ class Kernel extends HttpKernel
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
+        // Verificación de correo: sin verificar no se puede usar Mi cuenta
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        // Invitados pueden comprar; un usuario con sesión tiene que haber verificado su correo
+        'verificado.si.cliente' => \App\Http\Middleware\VerificadoSiInicioSesion::class,
     ];
 }

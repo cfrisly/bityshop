@@ -3,7 +3,8 @@ use App\Http\Controllers\OrderController;
 
 Route::get('/', 'ProductController@index');
 
-Auth::routes();
+// Registro con verificación de correo (ruta /email/verify)
+Auth::routes(['verify' => true]);
 
 Route::post('/direcciones', 'AddressController@store')->name('addresses.store');
 Route::put('/direcciones/{id}', 'AddressController@update')->name('addresses.update');
@@ -36,13 +37,13 @@ Route::group(['prefix' => 'cart', 'as' => 'cart.'], function() {
    Route::post('adv/{masterProductVariant}', 'CartController@addVariant')->name('add-variant');
    Route::post('update/{cart_item}', 'CartController@update')->name('update');
    Route::post('remove/{cart_item}', 'CartController@remove')->name('remove');
-   Route::post('favorito/{cart_item}', 'CartController@moveToFavorites')->middleware('auth')->name('favorite');
+   Route::post('favorito/{cart_item}', 'CartController@moveToFavorites')->middleware(['auth', 'verified'])->name('favorite');
    Route::post('cupon', 'CartController@applyCoupon')->name('coupon.apply');
    Route::post('regalo', 'CartController@toggleGift')->name('gift');
    Route::post('cupon/{code}/quitar', 'CartController@removeCoupon')->name('coupon.remove');
 });
 
-Route::group(['prefix' => 'checkout', 'as' => 'checkout.'], function() {
+Route::group(['prefix' => 'checkout', 'as' => 'checkout.', 'middleware' => 'verificado.si.cliente'], function() {
    Route::get('show', 'CheckoutController@show')->name('show');
    Route::post('submit', 'CheckoutController@submit')->name('submit');
 });

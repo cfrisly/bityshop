@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class FavoriteController extends Controller
 {
     public function __construct(){
-        $this->middleware('auth');
+        $this->middleware(['auth', 'verified']);
     }
 
     /** Si el producto no esta en favoritos lo agrega si ya esta lo quita */
